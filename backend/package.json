@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "bot": "tsx src/bot.ts",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
