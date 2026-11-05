@@ -17,8 +17,7 @@ export default defineConfig({
       // AGENTS.md: cobertura mínima de 70 % en reglas y algoritmo. Si baja, `npm test` falla.
       thresholds: {
         "src/rules/**": MIN_COVERAGE,
-        // Descomentar en el primer commit de backend/src/engine/:
-        // "src/engine/**": MIN_COVERAGE,
+        "src/engine/**": MIN_COVERAGE,
       },
     },
   },
