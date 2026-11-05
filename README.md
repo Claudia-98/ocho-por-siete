@@ -31,6 +31,7 @@ Otros comandos:
 | Qué | Comando |
 |---|---|
 | Revisar tipos | `npm run typecheck` |
+| Mock del árbitro (puerto 4000) | `npm run mock` |
 | Pruebas en modo observación (backend) | `npm run test:watch -w backend` |
 
 ## Variables de entorno
@@ -52,7 +53,7 @@ Copiar `.env.example` a `.env` y completar. `.env` no se sube al repo.
 | `backend/src/engine/` — algoritmo | pendiente |
 | `backend/src/arbiter/` — cliente del árbitro | pendiente |
 | `backend/src/api/` — API para la web | pendiente |
-| `mock-arbitro/` | pendiente |
+| `mock-arbitro/` — árbitro falso (v1.0.1) | ✅ con pruebas — `npm run mock`, ver [mock-arbitro/README.md](mock-arbitro/README.md) |
 | `frontend/` | pendiente |
 
-El bot, la API, el mock y la web (`npm run bot`, `api`, `mock`, `web`) se agregan con sus módulos.
+El bot, la API y la web (`npm run bot`, `api`, `web`) se agregan con sus módulos.
