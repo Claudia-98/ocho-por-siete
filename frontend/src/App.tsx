@@ -13,9 +13,10 @@ import styles from "./App.module.css";
 
 /**
  * Cambio de "Quién abre". Con el tablero vacío la partida empieza de inmediato con el nuevo orden
- * (si abre el bot, juega su primera ficha); con jugadas en curso o una partida terminada solo se
- * guarda la preferencia para la siguiente. Mientras hay una petición pendiente tampoco se reinicia,
- * para que la respuesta del bot no caiga sobre la partida nueva.
+ * (si abre el bot, juega su primera ficha); con una partida terminada solo se guarda la preferencia
+ * para la siguiente. Con jugadas en curso los controles están bloqueados, pero por si acaso tampoco
+ * se reinicia. Mientras hay una petición pendiente no se reinicia, para que la respuesta del bot no
+ * caiga sobre la partida nueva.
  */
 export function changeOpener(api: Pick<GameApi, "state" | "newGame" | "setOpener">, opener: Role): void {
   api.setOpener(opener);

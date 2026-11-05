@@ -134,8 +134,18 @@ describe("Controls", () => {
     expect(checked("human")).toBe(false);
   });
 
-  it("avisa que quién abre aplica en la siguiente partida", () => {
-    expect(render({ inProgress: true }).includes("Se aplica al empezar una nueva partida.")).toBe(true);
+  const disabledGroups = (html: string) => (html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length;
+
+  it("con una partida en curso bloquea quién abre y la dificultad, y explica cómo cambiarlos", () => {
+    const html = render({ inProgress: true });
+    expect(disabledGroups(html)).toBe(2);
+    expect(html.includes("Para cambiar quién abre o la dificultad, empieza una nueva partida.")).toBe(true);
+  });
+
+  it("sin partida en curso, quién abre y la dificultad se pueden cambiar", () => {
+    const html = render({ inProgress: false });
+    expect(disabledGroups(html)).toBe(0);
+    expect(html.includes("empieza una nueva partida")).toBe(false);
   });
 });
 
@@ -204,14 +214,14 @@ describe("cambiar quién abre", () => {
     expect(html.includes("Tu turno")).toBe(true);
   });
 
-  it("con jugadas en curso, elegir «El bot» no reinicia la partida y avisa que aplica en la siguiente", () => {
+  it("con jugadas en curso, quién abre y la dificultad están bloqueados y la partida no se reinicia", () => {
     const state = ui({ game: gameFrom([3, 4]) });
     const { api, calls } = fake(state);
     changeOpener(api, "bot");
     expect(calls.opener).toEqual(["bot"]);
     expect(calls.newGame).toEqual([]);
     const html = renderToStaticMarkup(<App game={{ ...api, state: { ...state, opener: "bot" }, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
-    expect(html.includes("Se aplica al empezar una nueva partida.")).toBe(true);
+    expect((html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length).toBe(2);
     // Las dos jugadas siguen en el historial: la partida no se reinició.
     expect(html.includes("Tú, columna 4") && html.includes("Bot, columna 5")).toBe(true);
   });
