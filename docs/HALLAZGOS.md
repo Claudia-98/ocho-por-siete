@@ -41,3 +41,17 @@ Cosas que encontramos al revisar lo que nos entregaron o lo que generó la IA. S
 
 - **Decisión:** **no se adopta**: en las tres variantes jugó peor. El bot del torneo queda como estaba (probado y medido). No se usó la "paridad de amenazas" clásica porque está pensada para columnas de altura par (7×6); en 8×7 las columnas tienen 7 casillas y la regla cambia.
 - **Aprendizaje:** una mejora que suena razonable puede jugar peor; sin un torneo para medirla, la habríamos metido a ciegas 15 minutos antes del congelamiento.
+
+### Segundo experimento: ajuste de pesos (jueves 9:26–9:30)
+
+Mismo método (aperturas aleatorias de 4 jugadas, alternando quién abre, 250 ms por jugada), contra la versión actual:
+
+| Variante | Partidas | Versión actual | Variante | Empates |
+|---|---|---|---|---|
+| Centro ×2 (`center` 3 → 6) | 72 | 33 | 33 | 6 |
+| Centro ×3 (`center` 3 → 9) | 48 | 25 | 22 | 1 |
+| Defensa más fuerte (`oppThree` 60 → 80) | 24 | 14 | 9 | 1 |
+| Más peso a dos en línea (`two` 10 → 20) | 24 | 13 | 9 | 2 |
+| Menos peso a dos en línea (`two` 10 → 5) | 24 | 12 | 10 | 2 |
+
+El centro ×2 parecía mejor en la primera ronda (13–10), pero con 48 partidas nuevas quedó empatado: era ruido. **Ninguna variante supera a la actual; los pesos se quedan como están.**
