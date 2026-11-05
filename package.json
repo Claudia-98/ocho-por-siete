@@ -1,0 +1,17 @@
+{
+  "name": "ocho-por-siete",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bot y app web de Cuatro en línea 8×7 — Equipo 4 (Ocho por Siete)",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
