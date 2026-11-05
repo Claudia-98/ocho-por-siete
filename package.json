@@ -18,6 +18,7 @@
     "mock": "npm run start -w mock-arbitro",
     "bot": "npm run bot -w backend --",
     "api": "npm run api -w backend",
-    "web": "npm run dev -w frontend"
+    "web": "npm run dev -w frontend",
+    "submit": "npm run submit -w backend --"
   }
 }

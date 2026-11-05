@@ -11,7 +11,7 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.ts"],
       // Puntos de entrada (leen process.env y abren conexiones): no se prueban con unit tests.
-      exclude: ["src/bot.ts", "src/web-api.ts"],
+      exclude: ["src/bot.ts", "src/web-api.ts", "src/submit.ts"],
       reporter: ["text", "html", "json-summary"],
       reportsDirectory: "coverage",
       // AGENTS.md: cobertura mínima de 70 % en reglas y algoritmo. Si baja, `npm test` falla.

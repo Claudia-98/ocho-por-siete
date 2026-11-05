@@ -94,6 +94,22 @@ export class ArbiterClient {
     return body as { game_id: string; you?: number };
   }
 
+  /** PUT /api/me/submission — registra el repo y el hash del commit final (antes de las 9:45). */
+  async submit(repoUrl: string, commit: string): Promise<{ repo_url: string; commit: string; registered_at?: string }> {
+    const res = await this.fetch(`${this.baseUrl}/api/me/submission`, {
+      method: "PUT",
+      headers: this.headers,
+      body: JSON.stringify({ repo_url: repoUrl, commit }),
+    });
+    const body = await readJson(res);
+    if (res.status === 401) throw new AuthError();
+    if (!res.ok) {
+      const message = isApiError(body) ? `${body.error}: ${body.message ?? ""}` : `HTTP ${res.status}`;
+      throw new ProtocolError(`No se registró la entrega (${message}).`, body);
+    }
+    return body as { repo_url: string; commit: string; registered_at?: string };
+  }
+
   /** GET /api/me — útil para verificar el token al arrancar. */
   async me(): Promise<unknown> {
     const res = await this.fetch(`${this.baseUrl}/api/me`, { headers: this.headers });
