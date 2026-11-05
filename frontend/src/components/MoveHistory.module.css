@@ -1,0 +1,43 @@
+.history summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.history summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.empty {
+  margin: 0.6rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.list {
+  margin: 0.6rem 0 0;
+  padding-left: 2.2rem;
+  max-height: 11rem;
+  overflow-y: auto;
+  columns: 2;
+  column-gap: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.list li {
+  break-inside: avoid;
+  padding: 0.15rem 0;
+}
+
+.list li > span {
+  vertical-align: middle;
+}
+
+.list li > span:first-child {
+  display: inline-block;
+  width: 0.95em;
+  margin-right: 0.4rem;
+  vertical-align: -0.12em;
+}

@@ -1,0 +1,47 @@
+.banner {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-radius: 18px;
+  background: #fff;
+  border: 2px solid var(--line);
+}
+
+.human {
+  border-color: var(--red);
+  background: linear-gradient(180deg, #fff 0%, #fff4f2 100%);
+}
+
+.bot {
+  border-color: var(--yellow-deep);
+  background: linear-gradient(180deg, #fff 0%, #fff9e6 100%);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.detail {
+  margin: 0;
+  color: var(--ink-soft);
+  max-width: 34ch;
+}
+
+.again {
+  justify-self: start;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.again:hover {
+  background: var(--blue-deep);
+  border-color: var(--blue-deep);
+}

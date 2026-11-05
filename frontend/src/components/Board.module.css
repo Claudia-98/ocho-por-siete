@@ -1,0 +1,99 @@
+.wrap {
+  /* Tamaño de cada casilla: cabe en una laptop sin scroll y en un teléfono a lo ancho. */
+  --cell: clamp(36px, min(10.4vw, 9.2vh), 70px);
+  --pitch: var(--cell);
+  --frame-pad: calc(var(--cell) * 0.16);
+  display: grid;
+  justify-content: center;
+  gap: 6px;
+}
+
+.markers,
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(8, var(--cell));
+  padding-inline: var(--frame-pad);
+}
+
+.marker {
+  height: var(--cell);
+  display: grid;
+  place-items: end center;
+  padding-bottom: 4px;
+}
+
+/* Sin mouse (teléfono) no hay vista previa: la fila de arriba solo deja espacio para la caída. */
+@media (hover: none) {
+  .marker {
+    height: calc(var(--cell) * 0.35);
+  }
+}
+
+.marker > span {
+  width: 70%;
+}
+
+.numbers span {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--ink-soft);
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: repeat(8, var(--cell));
+  padding: var(--frame-pad);
+  background: linear-gradient(180deg, var(--blue) 0%, var(--blue-deep) 100%);
+  border-radius: calc(var(--cell) * 0.32);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.25),
+    inset 0 -5px 0 rgb(0 0 0 / 0.22),
+    0 14px 0 -4px var(--blue-rim),
+    0 22px 30px -12px rgb(21 33 59 / 0.45);
+}
+
+.column {
+  all: unset;
+  display: flex;
+  flex-direction: column-reverse; /* la fila 0 queda abajo */
+  border-radius: calc(var(--cell) * 0.5);
+  cursor: pointer;
+}
+
+.column[data-enabled="false"] {
+  cursor: not-allowed;
+}
+
+.column[data-enabled="true"]:hover,
+.column[data-enabled="true"]:focus-visible {
+  background: rgb(255 255 255 / 0.1);
+}
+
+.column:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.hole {
+  width: var(--cell);
+  height: var(--cell);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+/* El hueco: se ve la mesa a través del tablero. */
+.hole::before {
+  content: "";
+  position: absolute;
+  width: 82%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--table);
+  box-shadow: inset 0 4px 6px rgb(21 33 59 / 0.35);
+}
+
+.hole > span {
+  z-index: 1;
+}

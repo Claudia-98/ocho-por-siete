@@ -1,0 +1,67 @@
+/* Tokens: un juego de mesa de plástico sobre una mesa clara. */
+:root {
+  --table: #e6ebf2;
+  --track: #d6dde8;
+  --line: #c9d2df;
+  --ink: #15213b;
+  --ink-soft: #4a5874;
+  --blue: #1e4fd6;
+  --blue-deep: #163a9c;
+  --blue-rim: #0f2a73;
+  --red: #e1372e;
+  --red-deep: #b42019;
+  --yellow: #f4c21b;
+  --yellow-deep: #c99400;
+  --win: #ffffff;
+  --focus: #ff8a00;
+  --error: #b42019;
+  --notice-bg: #fff3cd;
+  --notice-ink: #6b4e00;
+
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--table);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, #f4f7fb 0%, transparent 60%),
+    var(--table);
+}
+
+/* :where() deja la especificidad en 0 para que los botones del tablero no hereden estos estilos. */
+:where(button) {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.6rem 1.05rem;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+:where(button:hover:not(:disabled)) {
+  background: #f2f5fa;
+}
+
+:where(button:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+:where(button:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

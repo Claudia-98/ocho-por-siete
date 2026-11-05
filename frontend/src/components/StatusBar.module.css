@@ -1,0 +1,84 @@
+.bar {
+  display: grid;
+  gap: 0.5rem;
+  min-height: 5.5rem;
+  align-content: start;
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.won .main {
+  color: var(--red-deep);
+}
+
+.lost .main {
+  color: var(--ink);
+}
+
+.error .main {
+  color: var(--error);
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.idle .main {
+  color: var(--ink-soft);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.detail {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.notice {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: var(--notice-bg);
+  color: var(--notice-ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.retry {
+  justify-self: start;
+}
+
+/* "Pensando…": tres puntos que se encienden por turno. */
+.dots {
+  width: 1.6em;
+  height: 0.4em;
+  background:
+    radial-gradient(circle, currentColor 45%, transparent 50%) 0 50% / 33% 100% no-repeat,
+    radial-gradient(circle, currentColor 45%, transparent 50%) 50% 50% / 33% 100% no-repeat,
+    radial-gradient(circle, currentColor 45%, transparent 50%) 100% 50% / 33% 100% no-repeat;
+  animation: pulse 1s steps(3) infinite;
+  opacity: 0.6;
+}
+
+@keyframes pulse {
+  from {
+    clip-path: inset(0 66% 0 0);
+  }
+  to {
+    clip-path: inset(0 -1% 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots {
+    animation: none;
+  }
+}

@@ -9,13 +9,15 @@
   },
   "workspaces": [
     "backend",
-    "mock-arbitro"
+    "mock-arbitro",
+    "frontend"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "mock": "npm run start -w mock-arbitro",
     "bot": "npm run bot -w backend --",
-    "api": "npm run api -w backend"
+    "api": "npm run api -w backend",
+    "web": "npm run dev -w frontend"
   }
 }
