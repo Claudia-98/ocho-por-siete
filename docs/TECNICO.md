@@ -48,6 +48,8 @@ Torneo local (`npm run tournament -w backend -- <rival> <partidas> <ms>`), alter
 | casa-basico | 20 | 300 | 20 ganadas, 0 empates, 0 perdidas | 8.9 |
 | casa-aleatorio | 10 | 100 | 10 ganadas | 8.9 |
 
+| casa-basico (laptop de Claudia, macOS, Node 24.2) | 10 | **1,800** | 10 ganadas, 0 empates, 0 perdidas | 10.9 (mín 2, máx 17); jugada más lenta 1,801 ms |
+
 Con 300 ms por jugada ya gana todo contra los bots de la casa; en el torneo se usan 1,800 ms. La siguiente comparación útil es contra otro motor (MCTS, ver plan de trabajo) y contra los otros equipos en amistosos.
 
 ### Cómo se verificó que la poda es correcta
