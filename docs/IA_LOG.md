@@ -51,3 +51,11 @@ Cada vez que la IA propone algo incorrecto (un bug, una suposición de 7×6, una
 - **Qué devolvió mal (2):** una prueba suponía que React escribe `value="bot" checked`; React escribe `checked="" value="bot"`. Se cambió la prueba para no depender del orden de los atributos.
 - **Qué devolvió mal (3):** textos poco claros detectados en las capturas: "en 0.0 s" (ahora "en un instante") y, con la API apagada detrás del proxy de Vite, "El bot respondió algo inesperado" en vez de "No hay conexión con el bot".
 - **Aprendizaje:** las pruebas pasaban en los tres casos; los errores visuales y de texto solo aparecieron mirando la app funcionando.
+
+### 2026-11-04 · Claudia · Claude (claude.ai)
+
+- **Qué se pidió:** configurar Vite para el frontend.
+- **Qué devolvió mal:** la IA fijó `vite ^6` en `frontend/`, pero Vitest (instalado en la raíz por el backend y el mock) ya había traído Vite 7. Quedaron dos copias de Vite y `npm run typecheck` falló en `vite.config.ts`: el plugin de React tenía los tipos de una versión y `defineConfig` los de la otra.
+- **Cómo se detectó:** al correr `npm run typecheck` en la laptop de Claudia (en el entorno de la IA no había npm para instalar Vite).
+- **Cómo se corrigió:** `vite ^7.3.0` y `@vitejs/plugin-react ^4.7.0` en `frontend/package.json`; con una sola versión de Vite en el workspace, los tipos coinciden. Se verificó en el `package-lock.json` qué versiones había instalado npm.
+- **Aprendizaje:** en un monorepo con workspaces, las versiones de herramientas compartidas (Vite, Vitest, TypeScript) tienen que coincidir entre paquetes.
