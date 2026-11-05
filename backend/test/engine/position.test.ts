@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Position, WINDOWS, evaluate, index } from "../../src/engine/index.js";
+import { Position, WEIGHTS, WINDOWS, chooseMove, evaluate, index } from "../../src/engine/index.js";
 import { boardFromMoves, createBoard } from "../../src/rules/index.js";
 import { picture } from "../helpers.js";
 
@@ -92,5 +92,42 @@ describe("evaluate (heurística)", () => {
     const center = Position.fromBoard(picture(["...X...O"]), 1);
     const edge = Position.fromBoard(picture(["X......O"]), 1);
     expect(evaluate(center) > evaluate(edge)).toBe(true);
+  });
+});
+
+describe("evaluate con pesos como parámetro", () => {
+  const board = picture(["OO......", "XXX....."]);
+
+  it("sin pesos usa WEIGHTS (el comportamiento del torneo no cambia)", () => {
+    const pos = Position.fromBoard(board, 1);
+    expect(evaluate(pos)).toBe(evaluate(pos, WEIGHTS));
+  });
+
+  it("duplicar `center` duplica el valor de una ficha sola en la columna 3", () => {
+    const pos = Position.fromBoard(picture(["...X...."]), 1);
+    expect(evaluate(pos)).toBe(WEIGHTS.center);
+    expect(evaluate(pos, { ...WEIGHTS, center: 2 * WEIGHTS.center })).toBe(2 * WEIGHTS.center);
+  });
+
+  it("subir `three` sube el valor de un tres en línea propio en esa misma diferencia", () => {
+    const pos = Position.fromBoard(board, 1);
+    const diff = evaluate(pos, { ...WEIGHTS, three: WEIGHTS.three + 15 }) - evaluate(pos);
+    // XXX en la fila 0 deja dos ventanas con tres propias y una vacía: columnas 0–3 (la 1–4 tiene dos vacías).
+    expect(diff).toBe(15);
+  });
+
+  it("subir `oppThree` castiga más el tres en línea del rival", () => {
+    const pos = Position.fromBoard(board, 2); // le toca a O; las X son del rival
+    const diff = evaluate(pos, { ...WEIGHTS, oppThree: WEIGHTS.oppThree + 20 }) - evaluate(pos);
+    expect(diff).toBe(-20);
+  });
+
+  it("chooseMove usa los pesos que recibe: con el centro castigado deja de abrir en 3 o 4", () => {
+    const empty = picture(["........"]);
+    const legal = [0, 1, 2, 3, 4, 5, 6, 7];
+    const opts = { budgetMs: 1000, now: () => 0, maxDepth: 1, tt: null };
+    expect([3, 4]).toContain(chooseMove(empty, 1, legal, opts).column);
+    const edgy = chooseMove(empty, 1, legal, { ...opts, weights: { ...WEIGHTS, center: -100 } });
+    expect([3, 4]).not.toContain(edgy.column);
   });
 });

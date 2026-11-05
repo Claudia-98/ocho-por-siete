@@ -10,6 +10,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "tournament": "tsx scripts/tournament.ts",
+    "compare": "tsx scripts/compare.ts",
     "submit": "tsx src/submit.ts"
   },
   "devDependencies": {

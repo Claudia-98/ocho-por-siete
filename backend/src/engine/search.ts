@@ -1,6 +1,6 @@
 // Negamax con poda alfa-beta, tabla de transposición y orden de jugadas.
 import { COLS } from "../rules/index.js";
-import { evaluate } from "./evaluate.js";
+import { evaluate, WEIGHTS, type Weights } from "./evaluate.js";
 import type { Position } from "./position.js";
 import { Bound, type TranspositionTable } from "./tt.js";
 
@@ -31,6 +31,8 @@ export interface SearcherOptions {
   now?: () => number;
   /** Instante (según `now`) en que hay que abortar. */
   deadline?: number;
+  /** Pesos de la heurística (por defecto `WEIGHTS`). */
+  weights?: Weights;
 }
 
 /** Cada cuántos nodos se revisa el reloj (potencia de 2 para usar una máscara). */
@@ -41,6 +43,7 @@ export class Searcher {
   private readonly tt: TranspositionTable | null;
   private readonly now: () => number;
   private readonly deadline: number;
+  private readonly weights: Weights;
 
   constructor(
     private readonly pos: Position,
@@ -49,6 +52,7 @@ export class Searcher {
     this.tt = options.tt;
     this.now = options.now ?? (() => 0);
     this.deadline = options.deadline ?? Infinity;
+    this.weights = options.weights ?? WEIGHTS;
   }
 
   /**
@@ -65,7 +69,7 @@ export class Searcher {
     for (const col of MOVE_ORDER) {
       if (pos.isWinningMove(col)) return WIN - (pos.count + 1);
     }
-    if (depth === 0) return evaluate(pos);
+    if (depth === 0) return evaluate(pos, this.weights);
 
     const alphaOrig = alpha;
     let ttMove = -1;
