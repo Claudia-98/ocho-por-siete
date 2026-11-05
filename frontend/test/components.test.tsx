@@ -87,9 +87,10 @@ describe("StatusBar", () => {
     expect(html.includes("El bot miró")).toBe(false);
   });
 
-  it("sin explicación del bot, en tu turno dice cómo jugar; mientras piensa, que busca su jugada", () => {
+  it("sin explicación del bot, en tu turno solo muestra el mensaje; mientras piensa, dice que busca su jugada", () => {
     const turn = renderToStaticMarkup(<StatusBar tone="turn" text="Elige una columna." detail={null} notice={null} onRetry={null} />);
-    expect(turn.includes("Haz clic en una columna para soltar tu ficha.")).toBe(true);
+    // Solo la etiqueta "Tu turno" y el mensaje: sin línea de apoyo.
+    expect(turn.match(/<p[ >]/g)?.length).toBe(2);
     const thinking = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail={null} notice={null} onRetry={null} />);
     expect(thinking.includes("Turno del bot")).toBe(true);
     expect(thinking.includes("Buscando la mejor jugada")).toBe(true);

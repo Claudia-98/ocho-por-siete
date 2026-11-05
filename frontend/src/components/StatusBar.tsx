@@ -26,10 +26,10 @@ const LABEL: Record<Tone, string> = {
   error: "Algo salió mal",
 };
 
-/** Línea de apoyo bajo el mensaje. En tu turno y en el del bot siempre ocupa su lugar, para que el panel no brinque. */
+/** Línea de apoyo bajo el mensaje: la explicación de la jugada del bot, o que está buscando la suya. */
 function supportLine(tone: Tone, detail: string | null): string | null {
   // La explicación es de la última jugada del bot: solo tiene sentido cuando ya te toca.
-  if (tone === "turn") return detail ?? "Haz clic en una columna para soltar tu ficha.";
+  if (tone === "turn") return detail;
   if (tone === "thinking") return "Buscando la mejor jugada";
   return null;
 }
