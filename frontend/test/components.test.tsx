@@ -73,9 +73,10 @@ describe("Board", () => {
 describe("StatusBar", () => {
   it("muestra el texto, el detalle del bot y un aviso", () => {
     const html = renderToStaticMarkup(
-      <StatusBar tone="turn" text="Tu turno. Elige una columna." detail="El bot miró 9 jugadas adelante." notice="La columna 3 está llena." onRetry={null} />,
+      <StatusBar tone="turn" text="Elige una columna." detail="El bot miró 9 jugadas adelante." notice="La columna 3 está llena." onRetry={null} />,
     );
-    expect(html.includes("Tu turno. Elige una columna.")).toBe(true);
+    expect(html.includes("Tu turno")).toBe(true);
+    expect(html.includes("Elige una columna.")).toBe(true);
     expect(html.includes("El bot miró 9 jugadas adelante.")).toBe(true);
     expect(html.includes("La columna 3 está llena.")).toBe(true);
     expect(html.includes('aria-live="polite"')).toBe(true);
@@ -84,6 +85,14 @@ describe("StatusBar", () => {
   it("mientras el bot piensa no muestra la explicación de su jugada anterior", () => {
     const html = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail="El bot miró 9 jugadas adelante." notice={null} onRetry={null} />);
     expect(html.includes("El bot miró")).toBe(false);
+  });
+
+  it("sin explicación del bot, en tu turno dice cómo jugar; mientras piensa, que busca su jugada", () => {
+    const turn = renderToStaticMarkup(<StatusBar tone="turn" text="Elige una columna." detail={null} notice={null} onRetry={null} />);
+    expect(turn.includes("Haz clic en una columna para soltar tu ficha.")).toBe(true);
+    const thinking = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail={null} notice={null} onRetry={null} />);
+    expect(thinking.includes("Turno del bot")).toBe(true);
+    expect(thinking.includes("Buscando la mejor jugada")).toBe(true);
   });
 
   it("con error ofrece reintentar", () => {

@@ -86,7 +86,7 @@ describe("turnos y columnas", () => {
 describe("statusMessage", () => {
   it.each([
     ["sin partida", ui(), "idle", "Elige quién abre"],
-    ["tu turno", ui({ game: gameFrom([]) }), "turn", "Tu turno"],
+    ["tu turno", ui({ game: gameFrom([]) }), "turn", "Elige una columna"],
     ["bot pensando", ui({ game: gameFrom([3]), thinking: true }), "thinking", "pensando"],
     ["ganaste", ui({ game: gameFrom([], { status: "won", winner: 1 }) }), "won", "Ganaste"],
     ["ganó el bot", ui({ game: gameFrom([], { status: "won", winner: 2 }) }), "lost", "Ganó el bot"],
