@@ -25,3 +25,19 @@ Cosas que encontramos al revisar lo que nos entregaron o lo que generó la IA. S
   - No se usa ese ejemplo como dato de prueba "correcto". Si se usa en el mock o en pruebas del cliente, es solo para probar el parseo, no la lógica del juego.
   - Opcional: comparar `board` contra `moves` y dejar una advertencia en el log si no coinciden (sin cambiar la jugada).
 - **Pendiente:** avisar a Edson por si quiere corregirlo.
+
+## 2. Análisis de las derrotas contra Sleipnir y experimento descartado (jueves 9:15–9:30)
+
+- **Contexto:** en los amistosos de la mañana, Sleipnir ganó sus 8 partidas, dos de ellas contra nosotros (en el árbitro aparecemos como "Flash"): `g_0c3069a3` (52 jugadas) y `g_16426c0b` (47 jugadas).
+- **Tiempo:** Sleipnir usa en promedio 430–610 ms por jugada (máximo 1.1–1.5 s); nosotros 830–930 ms (máximo ~1.9 s). No nos ganan por pensar más tiempo.
+- **Análisis:** reprodujimos ambas partidas y pusimos a nuestro motor a analizar cada jugada nuestra con 1,800 ms. En las dos, el motor descubre la derrota forzada recién en la jugada 27–30, cuando ya ve 17–29 jugadas adelante; hasta la 25 evaluaba la partida como pareja (−80 a +46). Es una derrota estratégica de final de partida: el rival arma una casilla ganadora que se decide más de 20 jugadas después, cuando las columnas se llenan. Subir el tiempo de 1,800 a 2,000 ms (una jugada más de profundidad) no lo resuelve.
+- **Experimento:** se agregó a la heurística un bono por "amenazas diferidas" (tres en línea cuyo hueco todavía no se puede jugar) y se enfrentó contra la versión actual en 24 partidas por variante, con aperturas aleatorias de 4 jugadas y alternando quién abre, 250 ms por jugada:
+
+  | Bono (propia / del rival) | Versión actual | Con amenazas | Empates |
+  |---|---|---|---|
+  | 30 / 40 | 14 | 8 | 2 |
+  | 60 / 80 | 12 | 9 | 3 |
+  | 120 / 150 | 13 | 9 | 2 |
+
+- **Decisión:** **no se adopta**: en las tres variantes jugó peor. El bot del torneo queda como estaba (probado y medido). No se usó la "paridad de amenazas" clásica porque está pensada para columnas de altura par (7×6); en 8×7 las columnas tienen 7 casillas y la regla cambia.
+- **Aprendizaje:** una mejora que suena razonable puede jugar peor; sin un torneo para medirla, la habríamos metido a ciegas 15 minutos antes del congelamiento.
