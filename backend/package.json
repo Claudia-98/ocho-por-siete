@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "bot": "tsx src/bot.ts",
+    "api": "tsx src/web-api.ts",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

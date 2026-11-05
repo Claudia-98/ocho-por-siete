@@ -15,6 +15,7 @@
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "mock": "npm run start -w mock-arbitro",
-    "bot": "npm run bot -w backend --"
+    "bot": "npm run bot -w backend --",
+    "api": "npm run api -w backend"
   }
 }
