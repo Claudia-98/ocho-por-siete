@@ -55,3 +55,30 @@ Mismo método (aperturas aleatorias de 4 jugadas, alternando quién abre, 250 ms
 | Menos peso a dos en línea (`two` 10 → 5) | 24 | 12 | 10 | 2 |
 
 El centro ×2 parecía mejor en la primera ronda (13–10), pero con 48 partidas nuevas quedó empatado: era ruido. **Ninguna variante supera a la actual; los pesos se quedan como están.**
+
+## 3. Pesos distintos según quién abre (jueves, día del challenge)
+
+- **Idea:** quien abre (jugador 1) suele ganar, así que jugar agresivo y por el centro cuando abrimos, y defensivo cuando abre el rival. Nunca se habían probado pesos que dependieran del lado.
+- **Código:** `evaluate`, `Searcher` y `chooseMove` aceptan un juego de pesos opcional (por defecto `WEIGHTS`, así el bot del torneo no cambia). La comparación se corre con `npm run compare -w backend -- <A|B|C|igual> [partidas] [ms] [semilla]` (`backend/scripts/compare.ts`).
+- **Método:** el de §2. Aperturas aleatorias de 4 jugadas con semilla; cada apertura se juega dos veces cambiando quién abre; 250 ms por jugada; cada motor con su propia tabla de transposición. Se agregó un **control** (la versión actual contra sí misma) para medir cuánto ruido hay.
+- **Variantes:**
+  - **A, agresivo al abrir:** como jugador 1, `center` 3 → 6 y `three` 50 → 65; como jugador 2, pesos actuales.
+  - **B, defensivo al responder:** como jugador 2, `oppThree` 60 → 80 y `oppTwo` 10 → 15; como jugador 1, pesos actuales.
+  - **C:** A y B juntas.
+
+Resultados (variante · empates · actual), 72 partidas por fila:
+
+| Variante | Semilla | Total | Abre la variante (J1) | Abre la actual (variante = J2) |
+|---|---|---|---|---|
+| A | 2026 | 40 · 4 · 28 | 29 · 2 · 5 | 11 · 2 · 23 |
+| B | 2026 | 29 · 2 · 41 | 24 · 1 · 11 | 5 · 1 · 30 |
+| C | 2026 | 29 · 2 · 41 | 24 · 0 · 12 | 5 · 2 · 29 |
+| Control (actual vs. actual) | 2026 | 37 · 2 · 33 | 28 · 1 · 7 | 9 · 1 · 26 |
+| A (repetición) | 2027 | 32 · 1 · 39 | 21 · 0 · 15 | 11 · 1 · 24 |
+| Control (actual vs. actual) | 2027 | 33 · 8 · 31 | 24 · 3 · 9 | 9 · 5 · 22 |
+
+- **Quien abre gana casi siempre:** incluso el control gana 52 de 72 como jugador 1 (y pierde 16). La intuición era correcta, pero no se traduce en una mejora de pesos.
+- **A no mejora.** Su 40–28 de la primera ronda era engañoso: cuando A es el jugador 2 usa exactamente los pesos actuales, así que esas partidas son ruido puro. Donde A sí cambia algo (abriendo), sumando las dos semillas sacó 50 · 2 · 20, frente a 52 · 4 · 16 del control. En la repetición quedó por debajo del control (21–15 contra 24–9).
+- **B y C empeoran** justo donde cambian: como jugador 2 ganaron 5 de 36, contra 9 de 36 del control. Coincide con §2 (`oppThree` 80 ya había jugado peor).
+- **Ruido:** con los mismos pesos, el resultado de 36 partidas puede variar ±4 entre corridas (por el reloj y la tabla de transposición). Una diferencia de ese tamaño no prueba nada; por eso se repite con otra semilla y se compara contra un control.
+- **Decisión:** **no se adopta ninguna variante.** Los pesos y `BUDGET_MS` del torneo quedan como estaban.
