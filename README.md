@@ -32,6 +32,7 @@ Otros comandos:
 |---|---|
 | Revisar tipos | `npm run typecheck` |
 | Mock del árbitro (puerto 4000) | `npm run mock` |
+| API para la app web (puerto 3001) | `npm run api` |
 | Pruebas en modo observación (backend) | `npm run test:watch -w backend` |
 
 ## Correr el bot
@@ -65,8 +66,8 @@ Copiar `.env.example` a `.env` y completar. `.env` no se sube al repo.
 | `backend/src/rules/` — reglas del juego | ✅ con pruebas |
 | `backend/src/engine/` — algoritmo alfa-beta | ✅ con pruebas — `npm run tournament -w backend` |
 | `backend/src/arbiter/` — cliente del árbitro | ✅ con pruebas — `npm run bot` |
-| `backend/src/api/` — API para la web | pendiente |
+| `backend/src/api/` — API para la web | ✅ con pruebas — `npm run api`, contrato en [docs/API_WEB.md](docs/API_WEB.md) |
 | `mock-arbitro/` — árbitro falso (v1.0.1) | ✅ con pruebas — `npm run mock`, ver [mock-arbitro/README.md](mock-arbitro/README.md) |
 | `frontend/` | pendiente |
 
-La API y la web (`npm run api`, `web`) se agregan con sus módulos.
+La web (`npm run web`) se agrega con su módulo.

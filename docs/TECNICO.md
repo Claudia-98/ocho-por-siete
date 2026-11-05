@@ -66,3 +66,17 @@ Código en `backend/src/arbiter/`; entrada en `backend/src/bot.ts` (`npm run bot
 - `loop.ts`: ciclo infinito. La columna final siempre sale de `legal_moves`. Si el algoritmo falla, red de seguridad. Si se cae la red al enviar, se reintenta una vez si pasaron menos de 2.5 s (es seguro: si la jugada sí llegó, el árbitro responde 409). Errores de red o del árbitro: espera de 0.5, 1, 2 y 4 s como máximo, nunca 30 s sin preguntar. Solo `401` detiene el bot.
 
 Verificado contra el mock: 3 prácticas contra casa-basico con 1,800 ms por jugada (dos abriendo nosotros, una abriendo la casa), 3 ganadas; profundidad 12–14 en las primeras jugadas.
+
+## API para la app web
+
+Contrato completo en `docs/API_WEB.md`. Código en `backend/src/api/`; entrada en `backend/src/web-api.ts` (`npm run api`).
+
+- `handlers.ts`: router puro `handleApi({ method, path, query, body }) → { status, body }`. Sin estado: reconstruye el tablero desde `moves` validando cada jugada (rango, columna llena, jugadas después de ganar). `/bot-move` llama al mismo `chooseMove` que el bot del torneo.
+- `server.ts`: capa `node:http` mínima (lee JSON, CORS, escribe la respuesta).
+- Proceso separado del bot: una búsqueda de la web nunca retrasa un turno del torneo.
+
+### 5. API con `node:http` en lugar de Fastify
+
+- **Plan (PLAN_BACKEND.md §2 y §8):** Fastify, probado con `app.inject()`.
+- **Qué se hizo:** `node:http` y un router puro que se prueba llamándolo directo.
+- **Por qué:** mismo motivo que el mock (§3): pocas rutas, sin plugins, cero dependencias, y se pudo probar en un entorno sin npm. El objetivo de `inject()` (probar rutas sin abrir puertos) se cumple igual con `handleApi()`. `AGENTS.md` se actualizó.

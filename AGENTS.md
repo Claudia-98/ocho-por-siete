@@ -58,7 +58,8 @@ No copies valores pensados para el tablero clásico de 7×6 (número de ventanas
 
 - Toda función nueva en `rules/` o `engine/` lleva prueba. La cobertura mínima es de 70 % en esas carpetas y está configurada como umbral en Vitest: no la bajes.
 - Las pruebas documentan el comportamiento, por ejemplo `"detecta diagonal ↗ que termina en la columna 7"`. No sirven las que solo comprueban que el código no lanza errores.
-- El cliente del árbitro se prueba con `fetch` simulado y la API con `app.inject()`, sin abrir puertos ni llamar a internet.
+- El cliente del árbitro se prueba con `fetch` simulado y la API llamando directo a `handleApi()` (router puro), sin abrir puertos ni llamar a internet.
+- El contrato de la API para la web está en `docs/API_WEB.md`. Si cambia una ruta o un campo, se actualiza ese archivo en el mismo commit.
 - No se prueba "qué tan bien juega" con unit tests; eso se mide con partidas contra el mock.
 
 ## Qué NO tocar
