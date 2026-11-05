@@ -41,3 +41,13 @@ Cada vez que la IA propone algo incorrecto (un bug, una suposición de 7×6, una
 - **Cómo se detectó:** (1) al correr las pruebas; (2) al probar el bot de punta a punta contra el mock con un token malo y con el mock apagado.
 - **Cómo se corrigió:** (1) se corrigió la prueba; (2) `bot.ts` muestra "Token inválido (401). Revisa TEAM_TOKEN." y, si el árbitro está caído al inicio, avisa y sigue reintentando.
 - **Aprendizaje:** las pruebas unitarias del ciclo pasaban; el problema estaba en el punto de entrada, que solo se ve probando el programa completo.
+
+### 2026-11-04 · Claudia · Claude (claude.ai)
+
+- **Qué se pidió:** la app web en React.
+- **Qué devolvió mal (1):** al pasar el mouse por una columna del tablero se pintaba una franja blanca: los estilos generales de `button` le ganaban a la clase de la columna. El primer arreglo (`:where(button):hover`) **tampoco** sirvió, porque `:where()` solo anula lo que está adentro del paréntesis y `:hover` quedaba afuera.
+- **Cómo se detectó:** revisando capturas de pantalla de partidas reales (Playwright); después, midiendo el color de fondo calculado de la columna.
+- **Cómo se corrigió:** todo el selector dentro de `:where(button:hover:not(:disabled))`.
+- **Qué devolvió mal (2):** una prueba suponía que React escribe `value="bot" checked`; React escribe `checked="" value="bot"`. Se cambió la prueba para no depender del orden de los atributos.
+- **Qué devolvió mal (3):** textos poco claros detectados en las capturas: "en 0.0 s" (ahora "en un instante") y, con la API apagada detrás del proxy de Vite, "El bot respondió algo inesperado" en vez de "No hay conexión con el bot".
+- **Aprendizaje:** las pruebas pasaban en los tres casos; los errores visuales y de texto solo aparecieron mirando la app funcionando.

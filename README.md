@@ -33,6 +33,7 @@ Otros comandos:
 | Revisar tipos | `npm run typecheck` |
 | Mock del árbitro (puerto 4000) | `npm run mock` |
 | API para la app web (puerto 3001) | `npm run api` |
+| App web (puerto 5173) | `npm run web` |
 | Pruebas en modo observación (backend) | `npm run test:watch -w backend` |
 
 ## Correr el bot
@@ -47,6 +48,17 @@ npm run bot -- --practice casa-basico --first 2 --games 3
 Contra el mock local: en una terminal `npm run mock`; en otra, con `ARBITRO_URL=http://localhost:4000` y `TEAM_TOKEN=dev-eq4` en el `.env`, `npm run bot -- --practice casa-basico`.
 
 Cada turno deja una línea en la consola: partida, turno, columna, profundidad, nodos, tiempo, valor y resultado. Si el token es inválido el bot se detiene con un mensaje claro; ante cualquier otro error (red, árbitro caído) sigue reintentando.
+
+## Jugar en la app web
+
+Dos terminales, desde la raíz del repo:
+
+```bash
+npm run api     # el bot para la web (puerto 3001)
+npm run web     # la app (puerto 5173)
+```
+
+Abrir http://localhost:5173. Para jugar desde el teléfono en la misma red Wi-Fi, abrir `http://<IP de la laptop>:5173` (Vite muestra la dirección al arrancar). Cómo se juega: [docs/MANUAL.md](docs/MANUAL.md).
 
 ## Variables de entorno
 
@@ -68,6 +80,5 @@ Copiar `.env.example` a `.env` y completar. `.env` no se sube al repo.
 | `backend/src/arbiter/` — cliente del árbitro | ✅ con pruebas — `npm run bot` |
 | `backend/src/api/` — API para la web | ✅ con pruebas — `npm run api`, contrato en [docs/API_WEB.md](docs/API_WEB.md) |
 | `mock-arbitro/` — árbitro falso (v1.0.1) | ✅ con pruebas — `npm run mock`, ver [mock-arbitro/README.md](mock-arbitro/README.md) |
-| `frontend/` | pendiente |
+| `frontend/` — app web React | ✅ con pruebas — `npm run web` |
 
-La web (`npm run web`) se agrega con su módulo.

@@ -80,3 +80,23 @@ Contrato completo en `docs/API_WEB.md`. Código en `backend/src/api/`; entrada e
 - **Plan (PLAN_BACKEND.md §2 y §8):** Fastify, probado con `app.inject()`.
 - **Qué se hizo:** `node:http` y un router puro que se prueba llamándolo directo.
 - **Por qué:** mismo motivo que el mock (§3): pocas rutas, sin plugins, cero dependencias, y se pudo probar en un entorno sin npm. El objetivo de `inject()` (probar rutas sin abrir puertos) se cumple igual con `handleApi()`. `AGENTS.md` se actualizó.
+
+## App web (frontend)
+
+Código en `frontend/`. React + TypeScript + Vite; `npm run web`. Habla solo con la API de `docs/API_WEB.md` (proxy de Vite `/api` → `localhost:3001`) y no reimplementa reglas.
+
+- `game/reducer.ts`: estado de la interfaz y selectores puros (a quién le toca, qué columnas se pueden jugar, textos de estado, deshacer, historial). Casi toda la lógica de la interfaz vive aquí y se prueba sin navegador.
+- `game/useGame.ts`: hook que orquesta las llamadas (nueva partida, jugada, turno del bot, deshacer, reintentar) y guarda el estado (AGENTS.md).
+- `api/client.ts`: `fetch` con tiempo máximo de 8 s y mensajes listos para mostrar; si la API está apagada, "No hay conexión con el bot…".
+- Componentes de presentación: `Board`, `Disc`, `StatusBar`, `Controls`, `ResultBanner`, `MoveHistory`.
+
+Diseño: un juego de mesa de plástico (tablero azul, huecos donde se ve la mesa). La única animación es la caída de la ficha, con un pequeño rebote; se desactiva con "reducir movimiento". Tus fichas son rojas y lisas; las del bot, amarillas con un anillo, para distinguirlas sin depender del color. Las columnas se muestran del 1 al 8. Botones reales por columna con `aria-label` ("Columna 4: 5 espacios libres"), flechas ← → para moverse y Enter para jugar. Responsivo: en pantallas angostas el panel baja debajo del tablero.
+
+Capturas en `docs/img/` (laptop, teléfono, fin de partida, sin conexión).
+
+### 6. Cambios respecto a PLAN_FRONTEND.md
+
+- **React 19 en lugar de 18:** es la versión estable actual; no cambia nada del plan.
+- **Pruebas de componentes con `react-dom/server` en lugar de Testing Library:** los componentes se renderizan a HTML y se revisa el resultado (56 casillas, columnas deshabilitadas, casillas ganadoras, textos). Ahorra `jsdom` y `@testing-library/*`, y se pudo correr en el entorno de la IA. Lo que no cubren (clics y llamadas encadenadas del hook) se probó con partidas reales en Chromium con Playwright: abrir humano y bot, deshacer, teclado, API caída y reintentar.
+- **`useGame` sin pruebas unitarias propias:** su lógica está en `reducer.ts` (probado); el hook solo encadena llamadas y se verificó de punta a punta.
+- **Opcionales hechos:** historial de jugadas, niveles de dificultad (`maxDepth`/`budgetMs`), deshacer y "qué pensó el bot". Pendiente: reproducir partidas del torneo (la API ya tiene `/replay`).
