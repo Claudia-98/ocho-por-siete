@@ -55,3 +55,11 @@ Mismo método (aperturas aleatorias de 4 jugadas, alternando quién abre, 250 ms
 | Menos peso a dos en línea (`two` 10 → 5) | 24 | 12 | 10 | 2 |
 
 El centro ×2 parecía mejor en la primera ronda (13–10), pero con 48 partidas nuevas quedó empatado: era ruido. **Ninguna variante supera a la actual; los pesos se quedan como están.**
+
+### Tercer experimento: búsqueda más rápida (jueves, tiempo extra)
+
+- **Detección rápida de victorias (adoptada):** en vez de colocar la ficha, revisar las 4 direcciones y quitarla, se usa una tabla precalculada con las ventanas de 4 que pasan por cada casilla (`CELL_TRIPLES` en `position.ts`). Mismo resultado, sin modificar el tablero.
+  - Mismas posiciones revisadas a profundidad fija (234,700 en ambas versiones) → **decide exactamente igual**; 149 pruebas en verde, incluida alfa-beta == minimax.
+  - **50 % más rápido:** 472 → 709 posiciones por milisegundo (sin otros procesos).
+  - Torneo contra la versión registrada (48 partidas, 250 ms, 4 torneos en paralelo): 23 nueva, 24 registrada, 1 empate. Sin diferencia medible en resultados; se adopta porque no cambia las decisiones y da algo más de profundidad con el mismo tiempo (decisión del equipo).
+- **History heuristic (descartada):** redujo las posiciones revisadas solo un 2 % y el costo de ordenar la hizo más lenta en total (434 ms contra 331 ms a profundidad 1–10).
