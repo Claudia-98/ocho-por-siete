@@ -5,9 +5,11 @@ import { Disc } from "./components/Disc";
 import { MoveHistory } from "./components/MoveHistory";
 import { ResultBanner } from "./components/ResultBanner";
 import { StatusBar } from "./components/StatusBar";
+import { Toast } from "./components/Toast";
+import { useToast } from "./components/useToast";
 import { createBoardPlaceholder } from "./game/placeholder";
 import { canDrop, describeStats, history, lastMoveCell, roleOf, statusMessage, undoMoves, type UiState } from "./game/reducer";
-import type { Role } from "./game/model";
+import { DIFFICULTY, type Difficulty, type Role } from "./game/model";
 import { useGame, type GameApi } from "./game/useGame";
 import styles from "./App.module.css";
 
@@ -23,17 +25,30 @@ export function humanHasPlayed(state: Pick<UiState, "game" | "humanPlayer">): bo
  * guarda la preferencia para la siguiente. Con jugadas tuyas en curso los controles están bloqueados,
  * pero por si acaso tampoco se reinicia. Mientras hay una petición pendiente no se reinicia, para que
  * la respuesta del bot no caiga sobre la partida nueva.
+ * Devuelve el texto del aviso que confirma el cambio.
  */
-export function changeOpener(api: Pick<GameApi, "state" | "newGame" | "setOpener">, opener: Role): void {
+export function changeOpener(api: Pick<GameApi, "state" | "newGame" | "setOpener">, opener: Role): string {
   api.setOpener(opener);
+  const who = opener === "bot" ? "abre el bot" : "abres tú";
   const finished = api.state.game !== null && api.state.game.status !== "playing";
-  if (!humanHasPlayed(api.state) && !finished && !api.state.pending) void api.newGame(opener);
+  if (!humanHasPlayed(api.state) && !finished && !api.state.pending) {
+    void api.newGame(opener);
+    return `Nueva partida: ${who}.`;
+  }
+  return `En la siguiente partida ${who}.`;
+}
+
+/** Cambio de dificultad. Devuelve el texto del aviso que confirma el cambio. */
+export function changeDifficulty(api: Pick<GameApi, "setDifficulty">, difficulty: Difficulty): string {
+  api.setDifficulty(difficulty);
+  return `Dificultad: ${DIFFICULTY[difficulty].label}.`;
 }
 
 export function App({ game: injected }: { game?: GameApi } = {}) {
   const own = useGame();
   const { state, newGame, play, undo, retry, setOpener, setDifficulty } = injected ?? own;
   const started = useRef(false);
+  const toast = useToast();
 
   // Al abrir la página, empieza una partida (una sola vez, también en StrictMode).
   useEffect(() => {
@@ -100,13 +115,14 @@ export function App({ game: injected }: { game?: GameApi } = {}) {
             busy={state.pending}
             onNewGame={() => void newGame()}
             onUndo={() => void undo()}
-            onOpener={(opener) => changeOpener({ state, newGame, setOpener }, opener)}
-            onDifficulty={setDifficulty}
+            onOpener={(opener) => toast.show(changeOpener({ state, newGame, setOpener }, opener))}
+            onDifficulty={(difficulty) => toast.show(changeDifficulty({ setDifficulty }, difficulty))}
           />
 
           <MoveHistory entries={history(g, state.humanPlayer)} />
         </aside>
       </main>
+      <Toast message={toast.message} onClose={toast.hide} />
     </div>
   );
 }

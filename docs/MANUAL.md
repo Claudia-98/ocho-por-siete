@@ -69,6 +69,8 @@ Para jugar de nuevo, presiona **Jugar otra vez**.
 | **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. Se puede cambiar mientras todavía no hayas puesto ninguna ficha o con la partida terminada; en cuanto haces tu primera jugada queda **bloqueada** hasta que empieces una nueva. |
 | **Jugadas de esta partida** | Haz clic para ver la lista: quién jugó y en qué columna (del 1 al 8). |
 
+Al cambiar quién abre o la dificultad aparece abajo un aviso breve que confirma el cambio, por ejemplo "Nueva partida: abre el bot." o "Dificultad: Difícil.". Se cierra solo a los pocos segundos o con la ×.
+
 ![Lista de jugadas abierta](img/manual-historial.png)
 
 ## En el teléfono

@@ -1,13 +1,14 @@
 // Los componentes se renderizan a HTML con react-dom/server: no hace falta navegador ni DOM simulado.
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { App, changeOpener, humanHasPlayed } from "../src/App";
+import { App, changeDifficulty, changeOpener, humanHasPlayed } from "../src/App";
 import { Board } from "../src/components/Board";
 import { Controls } from "../src/components/Controls";
 import { MoveHistory } from "../src/components/MoveHistory";
 import { ResultBanner } from "../src/components/ResultBanner";
 import { StatusBar } from "../src/components/StatusBar";
-import type { Role } from "../src/game/model";
+import { Toast } from "../src/components/Toast";
+import type { Difficulty, Role } from "../src/game/model";
 import type { GameApi } from "../src/game/useGame";
 import { gameFrom, ui } from "./fixtures";
 
@@ -266,5 +267,43 @@ describe("humanHasPlayed", () => {
     [2, [3, 4], true],
   ] as Array<[1 | 2, number[], boolean]>)("persona = jugador %s, jugadas %j → %s", (humanPlayer, moves, expected) => {
     expect(humanHasPlayed({ humanPlayer, game: gameFrom(moves) })).toBe(expected);
+  });
+});
+
+describe("avisos al cambiar opciones", () => {
+  const recorder = (state: ReturnType<typeof ui>) => ({
+    state,
+    setOpener: noop,
+    newGame: async () => {},
+    setDifficulty: noop,
+  });
+
+  it("si el cambio de quién abre empieza la partida, el aviso lo dice", () => {
+    expect(changeOpener(recorder(ui({ game: gameFrom([]) })), "bot")).toBe("Nueva partida: abre el bot.");
+    expect(changeOpener(recorder(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) })), "human")).toBe("Nueva partida: abres tú.");
+  });
+
+  it("con la partida terminada, el aviso dice que aplica en la siguiente", () => {
+    const game = gameFrom([0, 1, 0, 1, 0, 1, 0], { status: "won", winner: 1, nextPlayer: null, legalMoves: [] });
+    expect(changeOpener(recorder(ui({ game })), "bot")).toBe("En la siguiente partida abre el bot.");
+  });
+
+  it("al cambiar la dificultad la guarda y confirma con su nombre", () => {
+    const chosen: Difficulty[] = [];
+    expect(changeDifficulty({ setDifficulty: (d) => void chosen.push(d) }, "dificil")).toBe("Dificultad: Difícil.");
+    expect(chosen).toEqual(["dificil"]);
+  });
+});
+
+describe("Toast", () => {
+  it("muestra el aviso como estado anunciable, con botón para cerrarlo", () => {
+    const html = renderToStaticMarkup(<Toast message="Dificultad: Fácil." onClose={noop} />);
+    expect(html.includes('role="status"')).toBe(true);
+    expect(html.includes("Dificultad: Fácil.")).toBe(true);
+    expect(html.includes('aria-label="Cerrar aviso"')).toBe(true);
+  });
+
+  it("sin mensaje no dibuja nada", () => {
+    expect(renderToStaticMarkup(<Toast message={null} onClose={noop} />)).toBe("");
   });
 });
