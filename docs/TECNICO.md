@@ -1,6 +1,37 @@
 # Documentación técnica
 
-> En construcción. Se completa al final con la arquitectura final, el algoritmo, el manejo del tiempo y el reporte de cobertura.
+Bot de Cuatro en línea 8×7 y su app web, Equipo 4 (Ocho por Siete). Para un recorrido de 10 minutos: lee "Arquitectura" y luego las secciones del algoritmo y del cliente del árbitro.
+
+## Arquitectura
+
+```
+                         ┌──────────────── backend/src ────────────────┐
+  Árbitro (HTTPS)  ◄──── │ arbiter/ (cliente, long polling)  ── bot.ts │  npm run bot
+                         │        │                                    │
+                         │        ▼                                    │
+                         │ engine/ (alfa-beta) ◄── rules/ (reglas)     │  sin I/O, probados
+                         │        ▲                                    │
+  App web (React)  ────► │ api/ (router HTTP) ─────────── web-api.ts   │  npm run api
+   frontend/             └─────────────────────────────────────────────┘
+  mock-arbitro/  ← mismo contrato que el árbitro real (npm run mock)
+```
+
+- `rules/` y `engine/` no saben nada de HTTP, variables de entorno ni del reloj del sistema: todo se inyecta. Por eso se prueban sin levantar servidores.
+- El bot del torneo y la API para la web son **procesos separados** que usan el **mismo** `chooseMove`.
+- `npm run submit` registra la entrega (`backend/src/submit.ts`, lógica pura en `submission.ts`).
+
+## Pruebas y cobertura
+
+Un solo comando: `npm test` (Vitest en los tres paquetes). Al 4 de noviembre:
+
+| Paquete | Pruebas | Cobertura |
+|---|---|---|
+| backend (reglas, algoritmo, cliente, API, entrega) | 149 | reglas + algoritmo: **99.5 %** de líneas (umbral exigido: 70 %, configurado en Vitest) |
+| mock-arbitro | 33 | núcleo del árbitro falso ~99 % |
+| frontend | 56 | ~87 % de líneas; `useGame` se verificó jugando en el navegador |
+| **Total** | **238** | |
+
+El reporte HTML queda en `backend/coverage/index.html` (y en `mock-arbitro/` y `frontend/`).
 
 ## Cambios respecto al plan
 

@@ -59,3 +59,10 @@ Cada vez que la IA propone algo incorrecto (un bug, una suposición de 7×6, una
 - **Cómo se detectó:** al correr `npm run typecheck` en la laptop de Claudia (en el entorno de la IA no había npm para instalar Vite).
 - **Cómo se corrigió:** `vite ^7.3.0` y `@vitejs/plugin-react ^4.7.0` en `frontend/package.json`; con una sola versión de Vite en el workspace, los tipos coinciden. Se verificó en el `package-lock.json` qué versiones había instalado npm.
 - **Aprendizaje:** en un monorepo con workspaces, las versiones de herramientas compartidas (Vite, Vitest, TypeScript) tienen que coincidir entre paquetes.
+
+### 2026-11-04 · Claudia · Claude (claude.ai)
+
+- **Qué se pidió:** capturas para el manual.
+- **Qué devolvió mal:** mientras el bot pensaba, la app seguía mostrando la explicación de su jugada **anterior** ("El bot miró 6 jugadas…"), y el texto "pensando…" tenía puntos suspensivos además de los puntos animados.
+- **Cómo se detectó:** al revisar la captura del estado "El bot está pensando" para el manual (para capturarlo se retrasó a propósito la respuesta de la API en el navegador de prueba).
+- **Cómo se corrigió:** la explicación solo se muestra cuando es tu turno (con una prueba nueva) y se quitaron los puntos suspensivos.

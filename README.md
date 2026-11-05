@@ -5,6 +5,9 @@ Bot y app web del Equipo 4 para el challenge de Yompi (5 de noviembre de 2026).
 - Planes: [PLAN_BACKEND.md](PLAN_BACKEND.md), [PLAN_FRONTEND.md](PLAN_FRONTEND.md)
 - Reglas para agentes de IA: [AGENTS.md](AGENTS.md)
 - Contrato del árbitro (v1.0.1): [docs/arbitro-openapi.json](docs/arbitro-openapi.json)
+- Documentación técnica: [docs/TECNICO.md](docs/TECNICO.md)
+- Manual de la app: [docs/MANUAL.md](docs/MANUAL.md)
+- Día del evento y guion de la exposición: [docs/EXPOSICION.md](docs/EXPOSICION.md)
 
 ## Requisitos
 
@@ -34,6 +37,7 @@ Otros comandos:
 | Mock del árbitro (puerto 4000) | `npm run mock` |
 | API para la app web (puerto 3001) | `npm run api` |
 | App web (puerto 5173) | `npm run web` |
+| Registrar la entrega | `npm run submit` |
 | Pruebas en modo observación (backend) | `npm run test:watch -w backend` |
 
 ## Correr el bot
@@ -59,6 +63,15 @@ npm run web     # la app (puerto 5173)
 ```
 
 Abrir http://localhost:5173. Para jugar desde el teléfono en la misma red Wi-Fi, abrir `http://<IP de la laptop>:5173` (Vite muestra la dirección al arrancar). Cómo se juega: [docs/MANUAL.md](docs/MANUAL.md).
+
+## Registrar la entrega (antes de las 9:45)
+
+```bash
+git push
+npm run submit      # registra en el árbitro la URL del repo y el hash del commit actual
+```
+
+Avisa si hay cambios sin commit o sin push y muestra lo que quedó registrado. Se puede repetir: vale el último registro.
 
 ## Variables de entorno
 
