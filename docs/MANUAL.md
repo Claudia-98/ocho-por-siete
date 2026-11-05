@@ -65,7 +65,7 @@ Para jugar de nuevo, presiona **Jugar otra vez**.
 |---|---|
 | **Nueva partida** | Empieza otra partida desde cero en cualquier momento. |
 | **Deshacer jugada** | Quita tu última jugada (y la respuesta del bot) para que vuelvas a intentarlo. Está gris si todavía no has jugado. |
-| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. El cambio se aplica **al empezar una nueva partida** (la aplicación te lo recuerda). |
+| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. Con el tablero vacío el cambio es **inmediato**: si eliges "El bot", pone su primera ficha enseguida. Con una partida en curso, el cambio se aplica **al empezar una nueva partida** (la aplicación te lo recuerda). |
 | **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. El cambio se aplica desde la siguiente jugada del bot. |
 | **Jugadas de esta partida** | Haz clic para ver la lista: quién jugó y en qué columna (del 1 al 8). |
 

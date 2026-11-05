@@ -1,12 +1,13 @@
 // Los componentes se renderizan a HTML con react-dom/server: no hace falta navegador ni DOM simulado.
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { App } from "../src/App";
+import { App, changeOpener } from "../src/App";
 import { Board } from "../src/components/Board";
 import { Controls } from "../src/components/Controls";
 import { MoveHistory } from "../src/components/MoveHistory";
 import { ResultBanner } from "../src/components/ResultBanner";
 import { StatusBar } from "../src/components/StatusBar";
+import type { Role } from "../src/game/model";
 import type { GameApi } from "../src/game/useGame";
 import { gameFrom, ui } from "./fixtures";
 
@@ -175,5 +176,56 @@ describe("App", () => {
     const html = renderToStaticMarkup(<App game={api(ui({ game }))} />);
     expect(html.includes("¡Ganaste!")).toBe(true);
     expect(html.includes("Jugar otra vez")).toBe(true);
+  });
+});
+
+describe("cambiar quién abre", () => {
+  /** API falsa que registra las llamadas; `newGame("bot")` deja el tablero como lo dejaría el bot al abrir. */
+  const fake = (state: ReturnType<typeof ui>) => {
+    const calls = { opener: [] as Role[], newGame: [] as Array<Role | undefined> };
+    const api = {
+      state,
+      setOpener: (o: Role) => void calls.opener.push(o),
+      newGame: async (o?: Role) => {
+        calls.newGame.push(o);
+        if (o === "bot") api.state = ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) });
+      },
+    };
+    return { api, calls };
+  };
+
+  it("con el tablero vacío, elegir «El bot» empieza la partida y el bot pone la primera ficha", () => {
+    const { api, calls } = fake(ui({ game: gameFrom([]) }));
+    changeOpener(api, "bot");
+    expect(calls.opener).toEqual(["bot"]);
+    expect(calls.newGame).toEqual(["bot"]);
+    const html = renderToStaticMarkup(<App game={{ ...api, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect(html.includes("Bot, columna 4")).toBe(true);
+    expect(html.includes("Tu turno")).toBe(true);
+  });
+
+  it("con jugadas en curso, elegir «El bot» no reinicia la partida y avisa que aplica en la siguiente", () => {
+    const state = ui({ game: gameFrom([3, 4]) });
+    const { api, calls } = fake(state);
+    changeOpener(api, "bot");
+    expect(calls.opener).toEqual(["bot"]);
+    expect(calls.newGame).toEqual([]);
+    const html = renderToStaticMarkup(<App game={{ ...api, state: { ...state, opener: "bot" }, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect(html.includes("Se aplica al empezar una nueva partida.")).toBe(true);
+    // Las dos jugadas siguen en el historial: la partida no se reinició.
+    expect(html.includes("Tú, columna 4") && html.includes("Bot, columna 5")).toBe(true);
+  });
+
+  it("con la partida terminada solo guarda la preferencia", () => {
+    const game = gameFrom([0, 1, 0, 1, 0, 1, 0], { status: "won", winner: 1, nextPlayer: null, legalMoves: [] });
+    const { api, calls } = fake(ui({ game }));
+    changeOpener(api, "bot");
+    expect(calls.newGame).toEqual([]);
+  });
+
+  it("mientras hay una petición pendiente no reinicia, aunque el tablero esté vacío", () => {
+    const { api, calls } = fake(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([]), pending: true, thinking: true }));
+    changeOpener(api, "human");
+    expect(calls.newGame).toEqual([]);
   });
 });
