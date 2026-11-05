@@ -79,6 +79,11 @@ describe("StatusBar", () => {
     expect(html.includes('aria-live="polite"')).toBe(true);
   });
 
+  it("mientras el bot piensa no muestra la explicación de su jugada anterior", () => {
+    const html = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail="El bot miró 9 jugadas adelante." notice={null} onRetry={null} />);
+    expect(html.includes("El bot miró")).toBe(false);
+  });
+
   it("con error ofrece reintentar", () => {
     const html = renderToStaticMarkup(<StatusBar tone="error" text="No hay conexión con el bot." detail={null} notice={null} onRetry={noop} />);
     expect(html.includes("Reintentar")).toBe(true);

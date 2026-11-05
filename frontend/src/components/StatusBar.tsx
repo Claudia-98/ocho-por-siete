@@ -31,7 +31,8 @@ export function StatusBar({ tone, text, detail, notice, onRetry }: StatusBarProp
           Reintentar
         </button>
       ) : null}
-      {detail && !onRetry ? <p className={styles.detail}>{detail}</p> : null}
+      {/* La explicación es de la última jugada del bot: solo tiene sentido cuando ya te toca. */}
+      {detail && tone === "turn" ? <p className={styles.detail}>{detail}</p> : null}
     </section>
   );
 }

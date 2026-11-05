@@ -106,12 +106,12 @@ export type Tone = "idle" | "turn" | "thinking" | "won" | "lost" | "draw" | "err
 export function statusMessage(s: UiState): { tone: Tone; text: string } {
   if (s.error) return { tone: "error", text: s.error.message };
   const g = s.game;
-  if (!g) return { tone: "idle", text: s.pending ? "Preparando el tablero…" : "Elige quién abre y empieza una partida." };
+  if (!g) return { tone: "idle", text: s.pending ? "Preparando el tablero" : "Elige quién abre y empieza una partida." };
   if (g.status === "won") {
     return g.winner === s.humanPlayer ? { tone: "won", text: "Ganaste. Hiciste cuatro en línea." } : { tone: "lost", text: "Ganó el bot." };
   }
   if (g.status === "draw") return { tone: "draw", text: "Empate: se llenó el tablero sin cuatro en línea." };
-  if (s.thinking || isBotTurn(s)) return { tone: "thinking", text: "El bot está pensando…" };
+  if (s.thinking || isBotTurn(s)) return { tone: "thinking", text: "El bot está pensando" };
   return { tone: "turn", text: "Tu turno. Elige una columna." };
 }
 
