@@ -24,3 +24,11 @@ Cada vez que la IA propone algo incorrecto (un bug, una suposición de 7×6, una
 - **Qué devolvió mal:** en la prueba "casa-basico gana si puede", la IA dibujó tres fichas O en la fila 1 con la columna 3 vacía debajo. La ficha nueva caía a la fila 0 y no completaba el cuatro, así que la prueba esperaba algo imposible (un error típico al dibujar tableros: olvidar la gravedad).
 - **Cómo se detectó:** al correr las pruebas falló con `expected null toBe 3`. Se revisó el dibujo, no el código del bot de la casa.
 - **Cómo se corrigió:** se puso una X debajo (`XXXO....` en la fila 0) para que la O caiga en la fila 1. Aprendizaje: cuando una prueba falla, revisar primero si la prueba es correcta.
+
+### 2026-11-04 · Claudia · Claude (claude.ai)
+
+- **Qué se pidió:** el motor alfa-beta con sus pruebas.
+- **Qué devolvió mal:** en `chooseMove`, la red de seguridad (`catch` final) volvía a llamar al reloj para medir el tiempo. Si el error venía justamente del reloj, la excepción se escapaba y el bot no habría enviado jugada (derrota por tiempo).
+- **Cómo se detectó:** al escribir la prueba "si el reloj falla, cae a la red de seguridad", antes de correrla, revisando el camino del error.
+- **Cómo se corrigió:** el reloj se lee dentro de un `try` y, si falla, se usa el inicio como referencia. La prueba queda en `test/engine/search.test.ts`.
+- **Extra:** para comprobar que las pruebas de la poda sirven, se metió un error a propósito en alfa-beta y las pruebas lo detectaron (ver `docs/TECNICO.md`).
