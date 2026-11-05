@@ -1,6 +1,7 @@
 // Punto de entrada del algoritmo: lo usan el bot del torneo y la API de la app web.
 import { COLS, type Board, type Player } from "../rules/index.js";
 import { Position } from "./position.js";
+import type { Weights } from "./evaluate.js";
 import { isForced, MOVE_ORDER, Searcher, TimeUp, WIN } from "./search.js";
 import { TranspositionTable } from "./tt.js";
 
@@ -28,6 +29,11 @@ export interface ChooseMoveOptions {
    * la clave es la posición completa). `null` la desactiva.
    */
   tt?: TranspositionTable | null;
+  /**
+   * Pesos de la heurística (por defecto `WEIGHTS`). Solo para experimentos: si dos juegos de
+   * pesos comparten tabla de transposición, se mezclan sus valores; usa una tabla por juego.
+   */
+  weights?: Weights;
 }
 
 export interface MoveDecision {
@@ -91,6 +97,7 @@ export function chooseMove(board: Board, player: Player, legalMoves: readonly nu
       tt: options.tt === undefined ? defaultTT() : options.tt,
       now: options.now,
       deadline: start + options.budgetMs,
+      ...(options.weights ? { weights: options.weights } : {}),
     });
     const maxDepth = Math.min(options.maxDepth ?? Infinity, COLS * 7 - pos.count);
     let best: { move: number; score: number } | null = null;

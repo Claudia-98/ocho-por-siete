@@ -11,6 +11,15 @@ export const WEIGHTS = {
   center: 3, // por ficha propia en las columnas 3 y 4
 } as const;
 
+/** Juego de pesos de la heurística. `WEIGHTS` es el que usa el bot del torneo. */
+export interface Weights {
+  readonly three: number;
+  readonly two: number;
+  readonly oppThree: number;
+  readonly oppTwo: number;
+  readonly center: number;
+}
+
 /**
  * Todas las ventanas de 4 casillas del tablero 8×7, como índices planos.
  * Horizontales 5×7 = 35, verticales 8×4 = 32, diagonales 2 × (5×4) = 40 → 107.
@@ -31,8 +40,11 @@ export const WINDOWS: readonly Int8Array[] = (() => {
 
 const CENTER_COLS = [3, 4] as const;
 
-/** Valor de la posición para `pos.current`: positivo = bueno para quien juega. */
-export function evaluate(pos: Position): number {
+/**
+ * Valor de la posición para `pos.current`: positivo = bueno para quien juega.
+ * `weights` permite medir otros pesos sin tocar los del torneo (por defecto `WEIGHTS`).
+ */
+export function evaluate(pos: Position, weights: Weights = WEIGHTS): number {
   const me = pos.current;
   const cells = pos.cells;
   let score = 0;
@@ -45,16 +57,16 @@ export function evaluate(pos: Position): number {
       else if (v !== 0) theirs++;
     }
     if (mine > 0 && theirs > 0) continue; // ventana bloqueada: no sirve a nadie
-    if (mine === 3) score += WEIGHTS.three;
-    else if (mine === 2) score += WEIGHTS.two;
-    else if (theirs === 3) score -= WEIGHTS.oppThree;
-    else if (theirs === 2) score -= WEIGHTS.oppTwo;
+    if (mine === 3) score += weights.three;
+    else if (mine === 2) score += weights.two;
+    else if (theirs === 3) score -= weights.oppThree;
+    else if (theirs === 2) score -= weights.oppTwo;
   }
   for (const col of CENTER_COLS) {
     for (let row = 0; row < ROWS; row++) {
       const v = cells[index(row, col)];
-      if (v === me) score += WEIGHTS.center;
-      else if (v !== 0) score -= WEIGHTS.center;
+      if (v === me) score += weights.center;
+      else if (v !== 0) score -= weights.center;
     }
   }
   return score;
