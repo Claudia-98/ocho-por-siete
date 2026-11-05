@@ -65,8 +65,8 @@ Para jugar de nuevo, presiona **Jugar otra vez**.
 |---|---|
 | **Nueva partida** | Empieza otra partida desde cero en cualquier momento. |
 | **Deshacer jugada** | Quita tu última jugada (y la respuesta del bot) para que vuelvas a intentarlo. Está gris si todavía no has jugado. |
-| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. Con el tablero vacío el cambio es **inmediato**: si eliges "El bot", pone su primera ficha enseguida. Con una partida en curso esta opción está **bloqueada**: para cambiarla, termina la partida o presiona "Nueva partida". |
-| **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. Se puede cambiar con el tablero vacío o con la partida terminada; con una partida en curso está **bloqueada** hasta que empieces una nueva. |
+| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. Mientras todavía no hayas puesto ninguna ficha, el cambio es **inmediato**: si eliges "El bot", pone su primera ficha enseguida; si el bot ya abrió y eliges "Tú", empieza otra partida en la que abres tú. En cuanto haces tu primera jugada, esta opción queda **bloqueada** hasta que la partida termine o presiones "Nueva partida". |
+| **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. Se puede cambiar mientras todavía no hayas puesto ninguna ficha o con la partida terminada; en cuanto haces tu primera jugada queda **bloqueada** hasta que empieces una nueva. |
 | **Jugadas de esta partida** | Haz clic para ver la lista: quién jugó y en qué columna (del 1 al 8). |
 
 ![Lista de jugadas abierta](img/manual-historial.png)

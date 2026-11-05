@@ -6,21 +6,28 @@ import { MoveHistory } from "./components/MoveHistory";
 import { ResultBanner } from "./components/ResultBanner";
 import { StatusBar } from "./components/StatusBar";
 import { createBoardPlaceholder } from "./game/placeholder";
-import { canDrop, describeStats, history, lastMoveCell, roleOf, statusMessage, undoMoves } from "./game/reducer";
+import { canDrop, describeStats, history, lastMoveCell, roleOf, statusMessage, undoMoves, type UiState } from "./game/reducer";
 import type { Role } from "./game/model";
 import { useGame, type GameApi } from "./game/useGame";
 import styles from "./App.module.css";
 
+/** ¿La persona ya puso alguna ficha? Si abrió el bot, su primera jugada no cuenta. */
+export function humanHasPlayed(state: Pick<UiState, "game" | "humanPlayer">): boolean {
+  const moves = state.game?.moves.length ?? 0;
+  return state.humanPlayer === 1 ? moves >= 1 : moves >= 2;
+}
+
 /**
- * Cambio de "Quién abre". Con el tablero vacío la partida empieza de inmediato con el nuevo orden
- * (si abre el bot, juega su primera ficha); con una partida terminada solo se guarda la preferencia
- * para la siguiente. Con jugadas en curso los controles están bloqueados, pero por si acaso tampoco
- * se reinicia. Mientras hay una petición pendiente no se reinicia, para que la respuesta del bot no
- * caiga sobre la partida nueva.
+ * Cambio de "Quién abre". Si la persona todavía no ha jugado (tablero vacío, o solo la primera ficha
+ * del bot), la partida empieza de inmediato con el nuevo orden; con una partida terminada solo se
+ * guarda la preferencia para la siguiente. Con jugadas tuyas en curso los controles están bloqueados,
+ * pero por si acaso tampoco se reinicia. Mientras hay una petición pendiente no se reinicia, para que
+ * la respuesta del bot no caiga sobre la partida nueva.
  */
 export function changeOpener(api: Pick<GameApi, "state" | "newGame" | "setOpener">, opener: Role): void {
   api.setOpener(opener);
-  if ((api.state.game?.moves.length ?? 0) === 0 && !api.state.pending) void api.newGame(opener);
+  const finished = api.state.game !== null && api.state.game.status !== "playing";
+  if (!humanHasPlayed(api.state) && !finished && !api.state.pending) void api.newGame(opener);
 }
 
 export function App({ game: injected }: { game?: GameApi } = {}) {
@@ -88,7 +95,7 @@ export function App({ game: injected }: { game?: GameApi } = {}) {
           <Controls
             opener={state.opener}
             difficulty={state.difficulty}
-            inProgress={(g?.moves.length ?? 0) > 0 && !finished}
+            inProgress={humanHasPlayed(state) && !finished}
             canUndo={undoMoves(g, state.humanPlayer) !== null}
             busy={state.pending}
             onNewGame={() => void newGame()}

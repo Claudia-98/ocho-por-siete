@@ -1,7 +1,7 @@
 // Los componentes se renderizan a HTML con react-dom/server: no hace falta navegador ni DOM simulado.
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { App, changeOpener } from "../src/App";
+import { App, changeOpener, humanHasPlayed } from "../src/App";
 import { Board } from "../src/components/Board";
 import { Controls } from "../src/components/Controls";
 import { MoveHistory } from "../src/components/MoveHistory";
@@ -142,6 +142,10 @@ describe("Controls", () => {
     expect(html.includes("Para cambiar quién abre o la dificultad, empieza una nueva partida.")).toBe(true);
   });
 
+  it("mientras se espera una respuesta también se bloquean", () => {
+    expect(disabledGroups(render({ busy: true }))).toBe(2);
+  });
+
   it("sin partida en curso, quién abre y la dificultad se pueden cambiar", () => {
     const html = render({ inProgress: false });
     expect(disabledGroups(html)).toBe(0);
@@ -237,5 +241,30 @@ describe("cambiar quién abre", () => {
     const { api, calls } = fake(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([]), pending: true, thinking: true }));
     changeOpener(api, "human");
     expect(calls.newGame).toEqual([]);
+  });
+
+  it("si abrió el bot y aún no juegas, elegir «Tú» empieza otra partida en la que abres tú", () => {
+    const { api, calls } = fake(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) }));
+    changeOpener(api, "human");
+    expect(calls.opener).toEqual(["human"]);
+    expect(calls.newGame).toEqual(["human"]);
+  });
+
+  it("si abrió el bot y aún no juegas, las opciones siguen disponibles", () => {
+    const state = ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) });
+    const html = renderToStaticMarkup(<App game={{ ...fake(state).api, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect((html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length).toBe(0);
+  });
+});
+
+describe("humanHasPlayed", () => {
+  it.each([
+    [1, [], false],
+    [1, [3], true],
+    [2, [], false],
+    [2, [3], false],
+    [2, [3, 4], true],
+  ] as Array<[1 | 2, number[], boolean]>)("persona = jugador %s, jugadas %j → %s", (humanPlayer, moves, expected) => {
+    expect(humanHasPlayed({ humanPlayer, game: gameFrom(moves) })).toBe(expected);
   });
 });
