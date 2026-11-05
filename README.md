@@ -24,7 +24,7 @@ Se corre una sola vez, en la raíz del repo; instala todos los workspaces.
 npm test
 ```
 
-Corre todas las pruebas y muestra el reporte de cobertura. Si la cobertura de `backend/src/rules/` baja de 70 %, el comando falla. El reporte HTML queda en `backend/coverage/index.html`.
+Corre todas las pruebas y muestra el reporte de cobertura. Si la cobertura de `backend/src/rules/` o `backend/src/engine/` baja de 70 %, el comando falla. El reporte HTML queda en `backend/coverage/index.html`.
 
 Otros comandos:
 
@@ -33,6 +33,19 @@ Otros comandos:
 | Revisar tipos | `npm run typecheck` |
 | Mock del árbitro (puerto 4000) | `npm run mock` |
 | Pruebas en modo observación (backend) | `npm run test:watch -w backend` |
+
+## Correr el bot
+
+```bash
+cp .env.example .env        # una sola vez; completar ARBITRO_URL y TEAM_TOKEN
+npm run bot                 # juega los turnos que le asigne el árbitro, hasta Ctrl+C
+npm run bot -- --practice casa-basico            # además crea una práctica al arrancar
+npm run bot -- --practice casa-basico --first 2 --games 3
+```
+
+Contra el mock local: en una terminal `npm run mock`; en otra, con `ARBITRO_URL=http://localhost:4000` y `TEAM_TOKEN=dev-eq4` en el `.env`, `npm run bot -- --practice casa-basico`.
+
+Cada turno deja una línea en la consola: partida, turno, columna, profundidad, nodos, tiempo, valor y resultado. Si el token es inválido el bot se detiene con un mensaje claro; ante cualquier otro error (red, árbitro caído) sigue reintentando.
 
 ## Variables de entorno
 
@@ -50,10 +63,10 @@ Copiar `.env.example` a `.env` y completar. `.env` no se sube al repo.
 | Módulo | Estado |
 |---|---|
 | `backend/src/rules/` — reglas del juego | ✅ con pruebas |
-| `backend/src/engine/` — algoritmo | pendiente |
-| `backend/src/arbiter/` — cliente del árbitro | pendiente |
+| `backend/src/engine/` — algoritmo alfa-beta | ✅ con pruebas — `npm run tournament -w backend` |
+| `backend/src/arbiter/` — cliente del árbitro | ✅ con pruebas — `npm run bot` |
 | `backend/src/api/` — API para la web | pendiente |
 | `mock-arbitro/` — árbitro falso (v1.0.1) | ✅ con pruebas — `npm run mock`, ver [mock-arbitro/README.md](mock-arbitro/README.md) |
 | `frontend/` | pendiente |
 
-El bot, la API y la web (`npm run bot`, `api`, `web`) se agregan con sus módulos.
+La API y la web (`npm run api`, `web`) se agregan con sus módulos.

@@ -32,3 +32,12 @@ Cada vez que la IA propone algo incorrecto (un bug, una suposición de 7×6, una
 - **Cómo se detectó:** al escribir la prueba "si el reloj falla, cae a la red de seguridad", antes de correrla, revisando el camino del error.
 - **Cómo se corrigió:** el reloj se lee dentro de un `try` y, si falla, se usa el inicio como referencia. La prueba queda en `test/engine/search.test.ts`.
 - **Extra:** para comprobar que las pruebas de la poda sirven, se metió un error a propósito en alfa-beta y las pruebas lo detectaron (ver `docs/TECNICO.md`).
+
+### 2026-11-04 · Claudia · Claude (claude.ai)
+
+- **Qué se pidió:** el cliente del árbitro (`npm run bot`) con pruebas.
+- **Qué devolvió mal (1):** una prueba esperaba que, con `legal_moves = [2, 5]`, la red de seguridad eligiera la 5. Lo correcto es la 2, porque el orden es 3, 4, 2, 5… La prueba estaba mal, no el código.
+- **Qué devolvió mal (2):** con un token inválido, el bot se caía con un error técnico de Node en vez de un mensaje claro; y si el árbitro no respondía al arrancar, el bot se salía en vez de reintentar (mañana eso sería derrota por ausencia).
+- **Cómo se detectó:** (1) al correr las pruebas; (2) al probar el bot de punta a punta contra el mock con un token malo y con el mock apagado.
+- **Cómo se corrigió:** (1) se corrigió la prueba; (2) `bot.ts` muestra "Token inválido (401). Revisa TEAM_TOKEN." y, si el árbitro está caído al inicio, avisa y sigue reintentando.
+- **Aprendizaje:** las pruebas unitarias del ciclo pasaban; el problema estaba en el punto de entrada, que solo se ve probando el programa completo.

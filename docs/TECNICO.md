@@ -56,3 +56,13 @@ Con 300 ms por jugada ya gana todo contra los bots de la casa; en el torneo se u
 
 - Prueba: alfa-beta (con y sin tabla) da **el mismo valor** que minimax sin poda a profundidad 4 en 12 posiciones aleatorias.
 - Prueba de mutación manual: se rompió la poda a propósito (`alpha >= beta - 30`) y esas dos pruebas fallaron; se restauró.
+
+## Cliente del árbitro
+
+Código en `backend/src/arbiter/`; entrada en `backend/src/bot.ts` (`npm run bot`).
+
+- `types.ts`: tipos del OpenAPI v1.0.1 y validación de las respuestas. Para jugar solo se exigen `game_id`, `you`, `board` (7×8) y `legal_moves`; los campos informativos que falten se rellenan con valores seguros. El bot usa `board` tal cual y **no** lo reconstruye desde `moves` (ver `docs/HALLAZGOS.md`).
+- `client.ts`: `fetch` inyectable. `next` con tiempo máximo de `wait + 10 s`; `move` con 5 s. `401` lanza `AuthError`; `400`/`409` se devuelven como datos (`penalized` = la partida se perdió).
+- `loop.ts`: ciclo infinito. La columna final siempre sale de `legal_moves`. Si el algoritmo falla, red de seguridad. Si se cae la red al enviar, se reintenta una vez si pasaron menos de 2.5 s (es seguro: si la jugada sí llegó, el árbitro responde 409). Errores de red o del árbitro: espera de 0.5, 1, 2 y 4 s como máximo, nunca 30 s sin preguntar. Solo `401` detiene el bot.
+
+Verificado contra el mock: 3 prácticas contra casa-basico con 1,800 ms por jugada (dos abriendo nosotros, una abriendo la casa), 3 ganadas; profundidad 12–14 en las primeras jugadas.
