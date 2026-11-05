@@ -32,7 +32,7 @@ Al abrirla, la partida empieza sola y te toca a ti.
 
 **El objetivo:** ser el primero en juntar **cuatro fichas tuyas seguidas**, en línea recta: de lado (horizontal), de arriba abajo (vertical) o en diagonal.
 
-1. **Elige una columna.** Cuando el mensaje dice **"Tu turno. Elige una columna."**, haz clic en cualquier parte de la columna donde quieras jugar. En el teléfono, tócala.
+1. **Elige una columna.** Cuando el mensaje dice **"Tu turno: Elige una columna."**, haz clic en cualquier parte de la columna donde quieras jugar. En el teléfono, tócala.
 2. **Tu ficha cae.** Las fichas caen hasta el espacio libre más bajo de esa columna, como en el juego de mesa. Antes de hacer clic, al pasar el mouse por una columna ves una ficha roja clarita arriba: ahí es donde vas a jugar.
 3. **El bot responde.** El mensaje cambia a **"El bot está pensando"**. Mientras tanto no puedes jugar. En un momento cae su ficha amarilla y vuelve a ser tu turno.
 4. **Repite** hasta que alguien haga cuatro en línea o se llene el tablero.
@@ -41,7 +41,7 @@ Al abrirla, la partida empieza sola y te toca a ti.
 
 ![El bot está pensando: el tablero no acepta jugadas mientras tanto](img/manual-pensando.png)
 
-Debajo del mensaje "Tu turno", la aplicación a veces explica la última jugada del bot, por ejemplo: *"El bot bloqueó tu cuatro en línea"* o *"El bot miró 13 jugadas adelante: 1.4 millones de posiciones en 0.9 s"*. Es solo informativo.
+Debajo del mensaje "Tu turno", la aplicación explica la última jugada del bot, por ejemplo: *"El bot bloqueó tu cuatro en línea"* o *"El bot miró 13 jugadas adelante: 1.4 millones de posiciones en 0.9 s"*. Es solo informativo.
 
 ### Columnas llenas
 
@@ -65,9 +65,11 @@ Para jugar de nuevo, presiona **Jugar otra vez**.
 |---|---|
 | **Nueva partida** | Empieza otra partida desde cero en cualquier momento. |
 | **Deshacer jugada** | Quita tu última jugada (y la respuesta del bot) para que vuelvas a intentarlo. Está gris si todavía no has jugado. |
-| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. El cambio se aplica **al empezar una nueva partida** (la aplicación te lo recuerda). |
-| **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. El cambio se aplica desde la siguiente jugada del bot. |
+| **Quién abre: Tú / El bot** | Elige quién pone la primera ficha. Mientras todavía no hayas puesto ninguna ficha, el cambio es **inmediato**: si eliges "El bot", pone su primera ficha enseguida; si el bot ya abrió y eliges "Tú", empieza otra partida en la que abres tú. En cuanto haces tu primera jugada, esta opción queda **bloqueada** hasta que la partida termine o presiones "Nueva partida". |
+| **Dificultad: Fácil / Normal / Difícil** | **Fácil:** el bot mira solo 2 jugadas adelante; se le puede ganar. **Normal:** mira hasta 6. **Difícil:** piensa hasta 1.5 segundos, igual que en el torneo; es muy difícil ganarle. Se puede cambiar mientras todavía no hayas puesto ninguna ficha o con la partida terminada; en cuanto haces tu primera jugada queda **bloqueada** hasta que empieces una nueva. |
 | **Jugadas de esta partida** | Haz clic para ver la lista: quién jugó y en qué columna (del 1 al 8). |
+
+Al cambiar quién abre o la dificultad aparece abajo un aviso breve que confirma el cambio, por ejemplo "Nueva partida: abre el bot." o "Dificultad: Difícil.". Se cierra solo a los pocos segundos o con la ×.
 
 ![Lista de jugadas abierta](img/manual-historial.png)
 

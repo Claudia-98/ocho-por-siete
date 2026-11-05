@@ -65,7 +65,7 @@
 .panel {
   display: grid;
   gap: 1.6rem;
-  padding-top: calc(clamp(36px, min(10.4vw, 9.2vh), 70px) + 6px); /* alinea con el borde superior del tablero */
+  padding-top: calc(var(--cell) + 6px); /* alinea con el borde superior del tablero */
 }
 
 @media (max-width: 860px) {

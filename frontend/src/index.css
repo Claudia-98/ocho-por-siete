@@ -12,11 +12,15 @@
   --red-deep: #b42019;
   --yellow: #f4c21b;
   --yellow-deep: #c99400;
+  --yellow-ink: #7a5a00; /* texto sobre amarillo claro, con contraste suficiente */
   --win: #ffffff;
   --focus: #ff8a00;
   --error: #b42019;
   --notice-bg: #fff3cd;
   --notice-ink: #6b4e00;
+
+  /* Tamaño de cada casilla: cabe en una laptop sin scroll y en un teléfono a lo ancho. */
+  --cell: clamp(32px, min(10.4vw, 9.2vh), 70px);
 
   font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
   font-size: 16px;
@@ -24,6 +28,14 @@
   color: var(--ink);
   background: var(--table);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Con el panel a la derecha (ver App.module.css), el tablero solo tiene el ancho que sobra:
+   márgenes y separación (~12vw) + panel (17rem) + barra de scroll (1rem). El marco mide 8.32 casillas. */
+@media (min-width: 861px) {
+  :root {
+    --cell: clamp(32px, min((100vw - 12vw - 18rem) / 8.32, 9.2vh), 70px);
+  }
 }
 
 *,

@@ -76,6 +76,14 @@
   outline-offset: 1px;
 }
 
+.group:disabled .segmented {
+  opacity: 0.55;
+}
+
+.group:disabled input {
+  cursor: not-allowed;
+}
+
 .hint {
   margin: 0;
   font-size: 0.85rem;

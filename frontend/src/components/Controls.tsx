@@ -4,7 +4,7 @@ import styles from "./Controls.module.css";
 export interface ControlsProps {
   opener: Role;
   difficulty: Difficulty;
-  /** Hay una partida en curso con jugadas: cambiar quién abre aplica en la siguiente. */
+  /** Ya jugaste en la partida en curso: quién abre y la dificultad quedan bloqueados hasta que termine o se empiece otra. */
   inProgress: boolean;
   canUndo: boolean;
   busy: boolean;
@@ -32,7 +32,7 @@ export function Controls(props: ControlsProps) {
         </button>
       </div>
 
-      <fieldset className={styles.group}>
+      <fieldset className={styles.group} disabled={inProgress || busy}>
         <legend>Quién abre</legend>
         <div className={styles.segmented}>
           {OPENERS.map((o) => (
@@ -42,10 +42,9 @@ export function Controls(props: ControlsProps) {
             </label>
           ))}
         </div>
-        {inProgress ? <p className={styles.hint}>Se aplica al empezar una nueva partida.</p> : null}
       </fieldset>
 
-      <fieldset className={styles.group}>
+      <fieldset className={styles.group} disabled={inProgress || busy}>
         <legend>Dificultad</legend>
         <div className={styles.segmented}>
           {(Object.keys(DIFFICULTY) as Difficulty[]).map((d) => (
@@ -56,6 +55,7 @@ export function Controls(props: ControlsProps) {
           ))}
         </div>
       </fieldset>
+      {inProgress ? <p className={styles.hint}>Para cambiar quién abre o la dificultad, empieza una nueva partida.</p> : null}
     </section>
   );
 }

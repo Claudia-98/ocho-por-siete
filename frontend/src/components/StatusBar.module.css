@@ -1,45 +1,87 @@
-.bar {
+/* Estado: ficha a la izquierda, etiqueta corta y mensaje; el color dice de quién es el turno. */
+.card {
+  --accent: var(--ink-soft);
+  --accent-ink: var(--ink-soft);
   display: grid;
-  gap: 0.5rem;
-  min-height: 5.5rem;
-  align-content: start;
+  gap: 0.6rem;
+}
+
+.turn,
+.won {
+  --accent: var(--red);
+  --accent-ink: var(--red-deep);
+}
+
+.thinking,
+.lost {
+  --accent: var(--yellow-deep);
+  --accent-ink: var(--yellow-ink);
+}
+
+.error {
+  --accent: var(--error);
+  --accent-ink: var(--error);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Ficha del turno, quieta y sin adornos. */
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  aspect-ratio: 1;
+  font-size: 1.7rem; /* la ficha "icon" mide 1.15em */
+}
+
+.mark {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-ink);
+}
+
+.copy {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
 }
 
 .main {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   margin: 0;
-  font-size: 1.45rem;
+  font-size: 1.3rem;
   line-height: 1.2;
   font-weight: 750;
   letter-spacing: -0.01em;
-}
-
-.won .main {
-  color: var(--red-deep);
-}
-
-.lost .main {
   color: var(--ink);
 }
 
+.idle .main,
 .error .main {
-  color: var(--error);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 650;
-}
-
-.idle .main {
-  color: var(--ink-soft);
-  font-size: 1.15rem;
-  font-weight: 600;
 }
 
 .detail {
   margin: 0;
+  padding-left: calc(2.5rem + 0.75rem); /* alineada con el mensaje, no con la ficha */
   color: var(--ink-soft);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .notice {
@@ -58,6 +100,9 @@
 
 /* "Pensando…": tres puntos que se encienden por turno. */
 .dots {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.35em;
   width: 1.6em;
   height: 0.4em;
   background:

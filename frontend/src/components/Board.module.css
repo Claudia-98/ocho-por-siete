@@ -1,6 +1,5 @@
 .wrap {
-  /* Tamaño de cada casilla: cabe en una laptop sin scroll y en un teléfono a lo ancho. */
-  --cell: clamp(36px, min(10.4vw, 9.2vh), 70px);
+  /* --cell se define en index.css: depende de si el panel va al lado o debajo. */
   --pitch: var(--cell);
   --frame-pad: calc(var(--cell) * 0.16);
   display: grid;

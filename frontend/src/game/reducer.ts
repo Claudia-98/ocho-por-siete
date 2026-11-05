@@ -112,7 +112,7 @@ export function statusMessage(s: UiState): { tone: Tone; text: string } {
   }
   if (g.status === "draw") return { tone: "draw", text: "Empate: se llenó el tablero sin cuatro en línea." };
   if (s.thinking || isBotTurn(s)) return { tone: "thinking", text: "El bot está pensando" };
-  return { tone: "turn", text: "Tu turno. Elige una columna." };
+  return { tone: "turn", text: "Elige una columna." };
 }
 
 /** Explicación corta de la última jugada del bot, para quien quiera ver "qué pensó". */

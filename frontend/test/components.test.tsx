@@ -1,12 +1,14 @@
 // Los componentes se renderizan a HTML con react-dom/server: no hace falta navegador ni DOM simulado.
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { App } from "../src/App";
+import { App, changeDifficulty, changeOpener, humanHasPlayed } from "../src/App";
 import { Board } from "../src/components/Board";
 import { Controls } from "../src/components/Controls";
 import { MoveHistory } from "../src/components/MoveHistory";
 import { ResultBanner } from "../src/components/ResultBanner";
 import { StatusBar } from "../src/components/StatusBar";
+import { Toast } from "../src/components/Toast";
+import type { Difficulty, Role } from "../src/game/model";
 import type { GameApi } from "../src/game/useGame";
 import { gameFrom, ui } from "./fixtures";
 
@@ -71,9 +73,10 @@ describe("Board", () => {
 describe("StatusBar", () => {
   it("muestra el texto, el detalle del bot y un aviso", () => {
     const html = renderToStaticMarkup(
-      <StatusBar tone="turn" text="Tu turno. Elige una columna." detail="El bot miró 9 jugadas adelante." notice="La columna 3 está llena." onRetry={null} />,
+      <StatusBar tone="turn" text="Elige una columna." detail="El bot miró 9 jugadas adelante." notice="La columna 3 está llena." onRetry={null} />,
     );
-    expect(html.includes("Tu turno. Elige una columna.")).toBe(true);
+    expect(html.includes("Tu turno")).toBe(true);
+    expect(html.includes("Elige una columna.")).toBe(true);
     expect(html.includes("El bot miró 9 jugadas adelante.")).toBe(true);
     expect(html.includes("La columna 3 está llena.")).toBe(true);
     expect(html.includes('aria-live="polite"')).toBe(true);
@@ -82,6 +85,15 @@ describe("StatusBar", () => {
   it("mientras el bot piensa no muestra la explicación de su jugada anterior", () => {
     const html = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail="El bot miró 9 jugadas adelante." notice={null} onRetry={null} />);
     expect(html.includes("El bot miró")).toBe(false);
+  });
+
+  it("sin explicación del bot, en tu turno solo muestra el mensaje; mientras piensa, dice que busca su jugada", () => {
+    const turn = renderToStaticMarkup(<StatusBar tone="turn" text="Elige una columna." detail={null} notice={null} onRetry={null} />);
+    // Solo la etiqueta "Tu turno" y el mensaje: sin línea de apoyo.
+    expect(turn.match(/<p[ >]/g)?.length).toBe(2);
+    const thinking = renderToStaticMarkup(<StatusBar tone="thinking" text="El bot está pensando" detail={null} notice={null} onRetry={null} />);
+    expect(thinking.includes("Turno del bot")).toBe(true);
+    expect(thinking.includes("Buscando la mejor jugada")).toBe(true);
   });
 
   it("con error ofrece reintentar", () => {
@@ -133,8 +145,22 @@ describe("Controls", () => {
     expect(checked("human")).toBe(false);
   });
 
-  it("avisa que quién abre aplica en la siguiente partida", () => {
-    expect(render({ inProgress: true }).includes("Se aplica al empezar una nueva partida.")).toBe(true);
+  const disabledGroups = (html: string) => (html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length;
+
+  it("con una partida en curso bloquea quién abre y la dificultad, y explica cómo cambiarlos", () => {
+    const html = render({ inProgress: true });
+    expect(disabledGroups(html)).toBe(2);
+    expect(html.includes("Para cambiar quién abre o la dificultad, empieza una nueva partida.")).toBe(true);
+  });
+
+  it("mientras se espera una respuesta también se bloquean", () => {
+    expect(disabledGroups(render({ busy: true }))).toBe(2);
+  });
+
+  it("sin partida en curso, quién abre y la dificultad se pueden cambiar", () => {
+    const html = render({ inProgress: false });
+    expect(disabledGroups(html)).toBe(0);
+    expect(html.includes("empieza una nueva partida")).toBe(false);
   });
 });
 
@@ -175,5 +201,119 @@ describe("App", () => {
     const html = renderToStaticMarkup(<App game={api(ui({ game }))} />);
     expect(html.includes("¡Ganaste!")).toBe(true);
     expect(html.includes("Jugar otra vez")).toBe(true);
+  });
+});
+
+describe("cambiar quién abre", () => {
+  /** API falsa que registra las llamadas; `newGame("bot")` deja el tablero como lo dejaría el bot al abrir. */
+  const fake = (state: ReturnType<typeof ui>) => {
+    const calls = { opener: [] as Role[], newGame: [] as Array<Role | undefined> };
+    const api = {
+      state,
+      setOpener: (o: Role) => void calls.opener.push(o),
+      newGame: async (o?: Role) => {
+        calls.newGame.push(o);
+        if (o === "bot") api.state = ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) });
+      },
+    };
+    return { api, calls };
+  };
+
+  it("con el tablero vacío, elegir «El bot» empieza la partida y el bot pone la primera ficha", () => {
+    const { api, calls } = fake(ui({ game: gameFrom([]) }));
+    changeOpener(api, "bot");
+    expect(calls.opener).toEqual(["bot"]);
+    expect(calls.newGame).toEqual(["bot"]);
+    const html = renderToStaticMarkup(<App game={{ ...api, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect(html.includes("Bot, columna 4")).toBe(true);
+    expect(html.includes("Tu turno")).toBe(true);
+  });
+
+  it("con jugadas en curso, quién abre y la dificultad están bloqueados y la partida no se reinicia", () => {
+    const state = ui({ game: gameFrom([3, 4]) });
+    const { api, calls } = fake(state);
+    changeOpener(api, "bot");
+    expect(calls.opener).toEqual(["bot"]);
+    expect(calls.newGame).toEqual([]);
+    const html = renderToStaticMarkup(<App game={{ ...api, state: { ...state, opener: "bot" }, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect((html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length).toBe(2);
+    // Las dos jugadas siguen en el historial: la partida no se reinició.
+    expect(html.includes("Tú, columna 4") && html.includes("Bot, columna 5")).toBe(true);
+  });
+
+  it("con la partida terminada solo guarda la preferencia", () => {
+    const game = gameFrom([0, 1, 0, 1, 0, 1, 0], { status: "won", winner: 1, nextPlayer: null, legalMoves: [] });
+    const { api, calls } = fake(ui({ game }));
+    changeOpener(api, "bot");
+    expect(calls.newGame).toEqual([]);
+  });
+
+  it("mientras hay una petición pendiente no reinicia, aunque el tablero esté vacío", () => {
+    const { api, calls } = fake(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([]), pending: true, thinking: true }));
+    changeOpener(api, "human");
+    expect(calls.newGame).toEqual([]);
+  });
+
+  it("si abrió el bot y aún no juegas, elegir «Tú» empieza otra partida en la que abres tú", () => {
+    const { api, calls } = fake(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) }));
+    changeOpener(api, "human");
+    expect(calls.opener).toEqual(["human"]);
+    expect(calls.newGame).toEqual(["human"]);
+  });
+
+  it("si abrió el bot y aún no juegas, las opciones siguen disponibles", () => {
+    const state = ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) });
+    const html = renderToStaticMarkup(<App game={{ ...fake(state).api, play: async () => {}, undo: async () => {}, retry: async () => {}, setDifficulty: noop }} />);
+    expect((html.match(/<fieldset[^>]*>/g) ?? []).filter((tag) => tag.includes("disabled")).length).toBe(0);
+  });
+});
+
+describe("humanHasPlayed", () => {
+  it.each([
+    [1, [], false],
+    [1, [3], true],
+    [2, [], false],
+    [2, [3], false],
+    [2, [3, 4], true],
+  ] as Array<[1 | 2, number[], boolean]>)("persona = jugador %s, jugadas %j → %s", (humanPlayer, moves, expected) => {
+    expect(humanHasPlayed({ humanPlayer, game: gameFrom(moves) })).toBe(expected);
+  });
+});
+
+describe("avisos al cambiar opciones", () => {
+  const recorder = (state: ReturnType<typeof ui>) => ({
+    state,
+    setOpener: noop,
+    newGame: async () => {},
+    setDifficulty: noop,
+  });
+
+  it("si el cambio de quién abre empieza la partida, el aviso lo dice", () => {
+    expect(changeOpener(recorder(ui({ game: gameFrom([]) })), "bot")).toBe("Nueva partida: abre el bot.");
+    expect(changeOpener(recorder(ui({ opener: "bot", humanPlayer: 2, game: gameFrom([3]) })), "human")).toBe("Nueva partida: abres tú.");
+  });
+
+  it("con la partida terminada, el aviso dice que aplica en la siguiente", () => {
+    const game = gameFrom([0, 1, 0, 1, 0, 1, 0], { status: "won", winner: 1, nextPlayer: null, legalMoves: [] });
+    expect(changeOpener(recorder(ui({ game })), "bot")).toBe("En la siguiente partida abre el bot.");
+  });
+
+  it("al cambiar la dificultad la guarda y confirma con su nombre", () => {
+    const chosen: Difficulty[] = [];
+    expect(changeDifficulty({ setDifficulty: (d) => void chosen.push(d) }, "dificil")).toBe("Dificultad: Difícil.");
+    expect(chosen).toEqual(["dificil"]);
+  });
+});
+
+describe("Toast", () => {
+  it("muestra el aviso como estado anunciable, con botón para cerrarlo", () => {
+    const html = renderToStaticMarkup(<Toast message="Dificultad: Fácil." onClose={noop} />);
+    expect(html.includes('role="status"')).toBe(true);
+    expect(html.includes("Dificultad: Fácil.")).toBe(true);
+    expect(html.includes('aria-label="Cerrar aviso"')).toBe(true);
+  });
+
+  it("sin mensaje no dibuja nada", () => {
+    expect(renderToStaticMarkup(<Toast message={null} onClose={noop} />)).toBe("");
   });
 });
