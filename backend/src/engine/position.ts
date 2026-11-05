@@ -31,6 +31,31 @@ for (let k = 0; k < 2 * CELLS; k++) {
 const SIDE_LO = rand32();
 const SIDE_HI = rand32();
 
+/**
+ * Para cada casilla, las otras 3 casillas de cada ventana de 4 que la contiene (en tríos seguidos).
+ * Sirve para saber si una ficha nueva hace cuatro sin colocarla ni recorrer direcciones.
+ */
+const CELL_TRIPLES: Int8Array[] = (() => {
+  const lists: number[][] = Array.from({ length: CELLS }, () => []);
+  const dirs: Array<[number, number]> = [[0, 1], [1, 0], [1, 1], [-1, 1]];
+  for (const [dr, dc] of dirs) {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cells: number[] = [];
+        for (let k = 0; k < CONNECT; k++) {
+          const rr = r + k * dr;
+          const cc = c + k * dc;
+          if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) break;
+          cells.push(index(rr, cc));
+        }
+        if (cells.length !== CONNECT) continue;
+        for (const cell of cells) lists[cell]!.push(...cells.filter((x) => x !== cell));
+      }
+    }
+  }
+  return lists.map((l) => Int8Array.from(l));
+})();
+
 /** Las 4 direcciones como [Δfila, Δcolumna]. */
 const DIRS: ReadonlyArray<readonly [number, number]> = [
   [0, 1],
@@ -124,13 +149,16 @@ export class Position {
     return false;
   }
 
-  /** ¿Jugar `col` gana de inmediato para el jugador al que le toca? */
+  /** ¿Jugar `col` gana de inmediato para el jugador al que le toca? (sin colocar la ficha) */
   isWinningMove(col: number): boolean {
     if (!this.canPlay(col)) return false;
-    this.play(col);
-    const wins = this.lastMoveWins(col);
-    this.undo(col);
-    return wins;
+    const p = this.current;
+    const cells = this.cells;
+    const t = CELL_TRIPLES[index(this.heights[col]!, col)]!;
+    for (let j = 0; j < t.length; j += 3) {
+      if (cells[t[j]!] === p && cells[t[j + 1]!] === p && cells[t[j + 2]!] === p) return true;
+    }
+    return false;
   }
 
   /** Columnas donde el jugador `player` ganaría si fuera su turno. */
