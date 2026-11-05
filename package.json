@@ -8,10 +8,12 @@
     "node": ">=22"
   },
   "workspaces": [
-    "backend"
+    "backend",
+    "mock-arbitro"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "mock": "npm run start -w mock-arbitro"
   }
 }
